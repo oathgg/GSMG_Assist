@@ -1,5 +1,7 @@
 ﻿$Script:TimeDifference = $null
 
+#API DOCS: https://binance-docs.github.io/apidocs/spot/en/#current-average-price
+
 function Calculate-TimeDifference($TimeStamp) {
     if (-not $Script:TimeDifference) {
         $serverTime = Query-ServerTimestamp
