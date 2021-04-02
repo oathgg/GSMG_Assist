@@ -12,12 +12,16 @@ if (-not (Test-Path "$curPath\parameters.ps1")) {
 . "$curPath\Functions\Converters.ps1"
 . "$curPath\Functions\Tools.ps1"
 
-$gsmgMfaCode = Read-Host "Please enter the GSMG MFA code"
-New-GSMGAuthentication -Email $global:GSMGEmail -Password $global:GSMGPassword -Code $gsmgMfaCode
-
 $strategyPath = "$curPath\Strategies\$global:GSMGStrategy.ps1"
 if (-not (Test-Path $strategyPath)) {
     throw "Strategy with the name '$global:GSMGStrategy' not found"
 }
 
-. $strategyPath
+while ($true) {
+    cls
+
+    . $strategyPath
+
+    Write-Host "Sleeping for 60 seconds before running strategy again..."
+    Sleep -Seconds 60
+}

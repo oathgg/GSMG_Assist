@@ -1,5 +1,5 @@
 ﻿$script:baseUri = "https://gsmg.io"
-$script:Token = ""
+$script:Token = $null
 
 function ConvertTo-GSMGMessage($Hashset) {
     $body = "{"
@@ -20,12 +20,20 @@ function ConvertTo-GSMGMessage($Hashset) {
 function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
     if ($RequiresToken) {
         if ([string]::IsNullOrEmpty($script:Token)) {
-            throw "No token has been configured, call 'New-GSMGAuthentication' first."
+            $gsmgMfaCode = Read-Host "Please enter the GSMG MFA code"
+            New-GSMGAuthentication -Email $global:GSMGEmail -Password $global:GSMGPassword -Code $gsmgMfaCode
         }
         $header = @{ 'Authorization' = "Bearer $($script:Token)" }
     }
 
     $res = Invoke-WebRequest -Uri $Uri -Method $Method -Body:$body -DisableKeepAlive -ContentType "application/json;charset=UTF-8" -Headers:$header
+
+    if ($res.StatusCode -eq "401") {
+        Write-Warning "Received status code 401 -> Refresh token."
+        $script:Token = $null
+        $res = Invoke-GSMGRequest -Uri $Uri -Method $Method -Body $Body -RequiresToken:$RequiresToken
+    }
+
     $res = $res.content | ConvertFrom-Json
 
     return $res
