@@ -28,9 +28,9 @@ function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
 
     $res = Invoke-WebRequest -Uri $Uri -Method $Method -Body:$body -DisableKeepAlive -ContentType "application/json;charset=UTF-8" -Headers:$header
 
-    if ($res.StatusCode -eq "401") {
-        Write-Warning "Received status code 401 -> Refresh token."
-        $script:Token = $null
+    if ($res.StatusCode -eq "500") {
+        Write-Warning "Received status code 500 -> Refresh token."
+        $script:Token = Refresh-GSMGToken
         $res = Invoke-GSMGRequest -Uri $Uri -Method $Method -Body $Body -RequiresToken:$RequiresToken
     }
 
@@ -39,9 +39,19 @@ function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
     return $res
 }
 
-function New-GSMGAuthentication($Email, $Password, $Code) {
-    Write-Host "Authenticating to GSMG..."
+function Refresh-GSMGToken() {
+    $url = "$script:baseUri/api/v1/refresh"
+    $res = Invoke-GSMGRequest -Uri $Uri -Method Post
 
+    if ($res.StatusCode -ne "200") {
+        [System.Windows.MessageBox]::Show("Error", "Session has expired...", [System.Windows.MessageBoxButton]::OK)
+        exit
+    }
+
+    return $res.token
+}
+
+function New-GSMGAuthentication($Email, $Password, $Code) {
     $uri = "$script:baseUri/api/v1/login"
     $body = ConvertTo-GSMGMessage -Hashset @{
         "email"=$Email
@@ -51,8 +61,6 @@ function New-GSMGAuthentication($Email, $Password, $Code) {
 
     $res = Invoke-GSMGRequest -Uri $Uri -Method Post -Body $body
     $script:Token = $res.token
-
-    Write-Host "Authenticated, using token $($script:Token)"
 }
 
 #PATCH /api/v1/markets/Binance:CAKEBUSD HTTP/1.1
