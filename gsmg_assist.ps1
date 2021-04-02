@@ -19,7 +19,14 @@ New-GSMGAuthentication -Email $global:GSMGEmail -Password $global:GSMGPassword -
 $markets = Get-GSMGMarkets
 
 foreach ($market in $markets) {
-    Query-24hTicker($market.market_name.Replace("Binance:", ""))
-}
+    $marketName = $market.market_name.Replace("Binance:", "")
+    $market24hInformation = Query-24hTicker($marketName)
+    $24hPriceChange = [float] $market24hInformation.priceChange
+    $bagPct = [float] $market.vol_sells_worth / ([float] $market.managed_value_usd / 100)
 
-#Set-GSMGSetting -Market "CAKEBUSD" -AggressivenessPct 15 -MinTradeProfitPct 5
+    if ($bagPct -le 40 -and $24hPriceChange -le 0) {
+        Set-GSMGSetting -Market $marketName -BemPct 2
+    } else {
+        Set-GSMGSetting -Market $marketName -BemPct 0
+    }
+}

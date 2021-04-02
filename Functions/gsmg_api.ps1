@@ -52,15 +52,17 @@ function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPc
     $uri = "$script:baseUri/api/v1/markets/Binance:$Market"
 
     $hashSet = @{}
-    if ($BemPct) {
+
+    if ($BemPct -ne $null) {
         $hashSet += @{"bem_pct"=$BemPct}
     }
-    if ($AggressivenessPct) {
+    if ($AggressivenessPct -ne $null) {
         $hashSet += @{"aggressiveness_pct"=$AggressivenessPct}
     }
-    if ($MinTradeProfitPct) {
+    if ($MinTradeProfitPct -ne $null) {
         $hashSet += @{"min_trade_profit_pct"=$MinTradeProfitPct}
     }
+
     $body = ConvertTo-GSMGMessage -Hashset $hashSet
     $res = Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken
     Write-Host "Configured '$Market', with values '$body'"
