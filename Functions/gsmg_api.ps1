@@ -18,6 +18,11 @@ function ConvertTo-GSMGMessage($Hashset) {
     return $body
 }
 
+function Get-GSMGHeader() {
+    $header = @{ 'Authorization' = "Bearer $($script:Token)" }
+    return $header
+}
+
 function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
     if ($RequiresToken) {
         if ([string]::IsNullOrEmpty($script:Token)) {
@@ -26,10 +31,19 @@ function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
         } else {
             Refresh-GSMGToken
         }
-        $header = @{ 'Authorization' = "Bearer $($script:Token)" }
+        $header = Get-GSMGHeader
     }
 
     $res = Invoke-WebRequest -Uri $Uri -Method $Method -Body:$body -ContentType "application/json;charset=UTF-8" -Headers:$header -DisableKeepAlive -ErrorAction Ignore
+
+    #https://app.swaggerhub.com/apis-docs/bloctite/simple/1.0.0#/
+    # - 500: Internal Server Error, here something goes wrong on GSMG end. In this case a unique reference is given and you are encouraged to contact support with it.
+    if ($res.StatusCode -eq 500) {
+        $res
+        $res.content
+        Read-Host "Response 500 encountered, press any key to continue..."
+    }
+
     $res = $res | ConvertFrom-Json
 
     return $res
@@ -38,10 +52,11 @@ function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
 function Refresh-GSMGToken() {
     $now = Get-Date
     if ($now -gt $script:TokenExpiresAt) {
+        $header = Get-GSMGHeader
         $uri = "$script:baseUri/api/v1/refresh"
-        $res = Invoke-GSMGRequest -Uri $uri -Method Post -RequiresToken
+        $res = Invoke-WebRequest -Uri $Uri -Method Post -ContentType "application/json;charset=UTF-8" -Headers:$header -DisableKeepAlive -ErrorAction Ignore | ConvertFrom-Json
 
-        $script:TokenExpiresAt = (Get-Date).AddSeconds($res.expires_in)
+        $script:TokenExpiresAt = (Get-Date).AddSeconds($res.expires_in - 200)
         $script:Token = $res.token
     }
 }
