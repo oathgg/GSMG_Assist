@@ -1,5 +1,6 @@
 ﻿$script:baseUri = "https://gsmg.io"
 $script:Token = $null
+$script:TokenExpiresAt = Get-Date
 
 function ConvertTo-GSMGMessage($Hashset) {
     $body = "{"
@@ -17,45 +18,36 @@ function ConvertTo-GSMGMessage($Hashset) {
     return $body
 }
 
+function Test-TokenExpired() {
+    
+}
+
 function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
     if ($RequiresToken) {
         if ([string]::IsNullOrEmpty($script:Token)) {
             $gsmgMfaCode = Read-Host "Please enter the GSMG MFA code"
             New-GSMGAuthentication -Email $global:GSMGEmail -Password $global:GSMGPassword -Code $gsmgMfaCode
+        } else {
+            Refresh-GSMGToken
         }
         $header = @{ 'Authorization' = "Bearer $($script:Token)" }
     }
 
-    $res = Invoke-WebRequest -Uri $Uri -Method $Method -Body:$body -ContentType "application/json;charset=UTF-8" -Headers:$header -ErrorAction Ignore
-    
-    switch ($res.StatusCode) {
-        401 {
-            Write-Warning "Received status code 401 -> Refresh token."
-            $script:Token = Refresh-GSMGToken
-            $res = Invoke-GSMGRequest -Uri $Uri -Method $Method -Body $Body -RequiresToken:$RequiresToken
-            break
-        }
-        500 {
-            Write-Warning "Session expired..."
-            exit
-        }
-    }
-    
+    $res = Invoke-WebRequest -Uri $Uri -Method $Method -Body:$body -ContentType "application/json;charset=UTF-8" -Headers:$header -DisableKeepAlive -ErrorAction Ignore
     $res = $res | ConvertFrom-Json
 
     return $res
 }
 
 function Refresh-GSMGToken() {
-    $url = "$script:baseUri/api/v1/refresh"
-    $res = Invoke-GSMGRequest -Uri $Uri -Method Post
+    $now = Get-Date
+    if ($now -gt $script:TokenExpiresAt) {
+        $uri = "$script:baseUri/api/v1/refresh"
+        $res = Invoke-GSMGRequest -Uri $uri -Method Post -RequiresToken
 
-    if ($res.StatusCode -ne "200") {
-        [System.Windows.MessageBox]::Show("Error", "Session has expired...", [System.Windows.MessageBoxButton]::OK)
-        exit
+        $script:TokenExpiresAt = (Get-Date).AddSeconds($res.expires_in)
+        $script:Token = $res.token
     }
-
-    return $res.token
 }
 
 function New-GSMGAuthentication($Email, $Password, $Code) {
@@ -67,6 +59,7 @@ function New-GSMGAuthentication($Email, $Password, $Code) {
     }
 
     $res = Invoke-GSMGRequest -Uri $Uri -Method Post -Body $body
+    $script:TokenExpiresAt = (Get-Date).AddSeconds($res.expires_in)
     $script:Token = $res.token
 }
 
