@@ -14,7 +14,7 @@ if (-not (Test-Path "$curPath\parameters.ps1")) {
 
 $strategyPath = "$curPath\Strategies\$global:GSMGStrategy.ps1"
 if (-not (Test-Path $strategyPath)) {
-    throw "Strategy with the name '$global:GSMGStrategy' not found"
+    throw "Could not find strategy for filename '$strategyPath'."
 }
 
 while ($true) {
