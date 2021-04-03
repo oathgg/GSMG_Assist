@@ -26,15 +26,17 @@ function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
         $header = @{ 'Authorization' = "Bearer $($script:Token)" }
     }
 
-    $res = Invoke-WebRequest -Uri $Uri -Method $Method -Body:$body -DisableKeepAlive -ContentType "application/json;charset=UTF-8" -Headers:$header
+    $res = Invoke-RestMethod -Uri $Uri -Method $Method -Body:$body -ContentType "application/json;charset=UTF-8" -Headers:$header
 
+    <#
     if ($res.StatusCode -eq "500") {
         Write-Warning "Received status code 500 -> Refresh token."
         $script:Token = Refresh-GSMGToken
         $res = Invoke-GSMGRequest -Uri $Uri -Method $Method -Body $Body -RequiresToken:$RequiresToken
     }
-
-    $res = $res.content | ConvertFrom-Json
+    
+    $res = $res | ConvertFrom-Json
+    #>
 
     return $res
 }
