@@ -7,7 +7,10 @@
         foreach ($market in $pairs.Keys | Sort-Object) {
             $pair = $pairs[$market]
             if ($pair.amount -gt 0) {
-                $currentMarketPrice = (Query-MarketValue($Market)).price
+                $currentMarketPrice = (Query-MarketValue($Market + "USDT")).price
+                if ($currentMarketPrice -eq $null) {
+                    $currentMarketPrice = 1
+                }
                 $total = $pair.Total
                 if ($total -lt 0) {
                     $total = 0
