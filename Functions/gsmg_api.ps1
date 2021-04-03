@@ -18,10 +18,6 @@ function ConvertTo-GSMGMessage($Hashset) {
     return $body
 }
 
-function Test-TokenExpired() {
-    
-}
-
 function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
     if ($RequiresToken) {
         if ([string]::IsNullOrEmpty($script:Token)) {
@@ -89,5 +85,5 @@ function Get-GSMGMarkets() {
     $uri = "$script:baseUri/api/v1/markets/allocations"
     $res = Invoke-GSMGRequest -Uri $Uri -Method Get -RequiresToken
 
-    return $res.merged
+    return $res.merged | Where-Object { $_.set_alloc_perc -gt 0 }
 }
