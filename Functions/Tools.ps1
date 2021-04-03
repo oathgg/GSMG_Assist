@@ -7,7 +7,12 @@
         foreach ($market in $pairs.Keys | Sort-Object) {
             $pair = $pairs[$market]
             if ($pair.amount -gt 0) {
-                $currentMarketPrice = (Query-MarketValue($Market + "USDT")).price
+                $marketName = $Market
+                if ($marketName -notmatch "USDT"`
+                -and $marketName -notmatch "BUSD") {
+                    $marketName += "USDT" # Set a default market
+                }
+                $currentMarketPrice = (Query-MarketValue($marketName)).price
                 if ($currentMarketPrice -eq $null) {
                     $currentMarketPrice = 1
                 }
