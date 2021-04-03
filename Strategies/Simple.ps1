@@ -6,12 +6,15 @@ foreach ($market in $markets) {
     $bagPct = [float] $market.vol_sells_worth / ([float] $market.managed_value_usd / 100)
 
     $bemPct = "0"
-    if ($bagPct -le 60 -and $24hPriceChange -le -2) {
+    
+    if ($24hPriceChange -le -12) {
+        $bemPct = "7"
+    } 
+    elseif ($24hPriceChange -le -8) {
+        $bemPct = "4"
+    } 
+    elseif ($bagPct -le 40 -and $24hPriceChange -le -2) {
         $bemPct = "2"
-    } elseif ($24hPriceChange -le -8) {
-        $bemPct = "5"
-    } elseif ($24hPriceChange -le -12) {
-        $bemPct = "8"
     }
     Set-GSMGSetting -Market $marketName -BemPct $bemPct
 }
