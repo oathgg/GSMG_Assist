@@ -10,7 +10,7 @@ foreach ($market in $markets) {
     
     if ($24hPriceChange -le -12) {
         $bemPct = "6"
-        $aggressivenessPct = "50"
+        $aggressivenessPct = "35"
     } 
     elseif ($24hPriceChange -le -8) {
         $bemPct = "4"
@@ -19,5 +19,9 @@ foreach ($market in $markets) {
     elseif ($bagPct -le 40 -and $24hPriceChange -le -2) {
         $bemPct = "2"
     }
+    elseif ($24hPriceChange -gt 2) {
+        $bemPct = "-2"
+    }
+
     Set-GSMGSetting -Market $marketName -BemPct $bemPct -AggressivenessPct $aggressivenessPct
 }
