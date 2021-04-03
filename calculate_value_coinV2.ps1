@@ -29,7 +29,7 @@ function Calculate-Balance($Balances) {
             $pairs["$asset"] = @{}
         }
 
-        if ($balance.asset -eq "BUSD" -or $balance.asset -eq "USDT") {
+        if ($asset -eq "BUSD" -or $asset -eq "USDT") {
             Write-Host "`t- Base currency, adding free + locked in balance"
 
             $baseCurrencyValue = [float] $balance.free + [float] $balance.locked
