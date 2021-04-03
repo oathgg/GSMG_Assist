@@ -18,41 +18,42 @@ $accountInformation = Query-Account
 $balances = $accountInformation.balances | Where-Object { [float]$_.Free -gt 0 -or [float]$_.Locked -gt 0 } | Sort-Object asset
 $pairs = @{}
 
-function Calculate-Balance($BaseMarket, $Balances) {
+function Calculate-Balance($Balances) {
     $pairs = @{}
 
-    if ($balances) {
-        Write-Host "Parsing balances for $BaseMarket..."
-        foreach($balance in $balances) {
-            if ($balance.asset -eq "USDT"`
-            -or $balance.asset -eq "BNB"`
-            -or $balance.asset -eq "BUSD") {
-                continue;
-            }
+    foreach($balance in $balances) {
+        Write-Host "Parsing balances $($balance.asset)"
 
-            $market = "$($balance.asset)$BaseMarket"
+        $asset = $balance.asset
+        if (-not $pairs.Contains("$asset")) {
+            $pairs["$asset"] = @{}
+        }
 
-            Write-Host "`t- $market"
+        if ($balance.asset -eq "BUSD" -or $balance.asset -eq "USDT") {
+            Write-Host "`t- Base currency, adding free + locked in balance"
 
-            if (-not $pairs.Contains("$market")) {
-                $pairs["$market"] = @{}
-            }
+            $baseCurrencyValue = [float] $balance.free + [float] $balance.locked
+            $pairs["$asset"]["Total"] = $baseCurrencyValue
+            $pairs["$asset"]["Amount"] = $baseCurrencyValue
+        } else {
+            foreach ($symbol in @("USDT","BUSD")) {
+                $market = $asset + $symbol
+                $timeago = (Get-Date).AddYears(-1)
+                $Trades = Query-MyTrades -Symbol $market -From $timeago
 
-            $timeago = (Get-Date).AddYears(-1)
-            $Trades = Query-MyTrades -Symbol $market -From $timeago
+                foreach ($trade in $Trades) {
+                    if ($trade.isBuyer) {
+                        $pairs["$asset"]["Total"] += [float] $trade.quoteQty
+                        $pairs["$asset"]["Amount"] += [float] $trade.qty - [float] $trade.commision
+                    } else {
+                        $pairs["$asset"]["Total"] -= [float] $trade.quoteQty
+                        $pairs["$asset"]["Amount"] -= [float] $trade.qty - [float] $trade.commision
 
-            foreach ($trade in $Trades) {
-                if ($trade.isBuyer) {
-                    $pairs["$market"]["Total"] += [float] $trade.quoteQty
-                    $pairs["$market"]["Amount"] += [float] $trade.qty - [float] $trade.commision
-                } else {
-                    $pairs["$market"]["Total"] -= [float] $trade.quoteQty
-                    $pairs["$market"]["Amount"] -= [float] $trade.qty - [float] $trade.commision
-
-                    # If the total is 0 it means we have probably taken out all our profits
-                    # Might be a moon bag, however, if the amount is less than 1 it means we left the coin completely
-                    if ($pairs["$market"]["Total"] -le 0 -and $pairs["$market"]["Amount"] -lt 1) {
-                        $pairs["$market"] = @{}
+                        # If the total is 0 it means we have probably taken out all our profits
+                        # Might be a moon bag, however, if the amount is less than 1 it means we left the coin completely
+                        if ($pairs["$asset"]["Total"] -le 0 -and $pairs["$asset"]["Amount"] -lt 1) {
+                            $pairs["$asset"] = @{}
+                        }
                     }
                 }
             }
@@ -62,8 +63,7 @@ function Calculate-Balance($BaseMarket, $Balances) {
     return $pairs
 }
 
-$pairs += Calculate-Balance -BaseMarket "USDT" -Balances $balances
-#$pairs += Calculate-Balance -BaseMarket "BUSD" -Balances $balances
+$pairs += Calculate-Balance -Balances $balances
 
 Get-BinanceTable -Pairs $Pairs
 
