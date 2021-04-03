@@ -26,17 +26,22 @@ function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
         $header = @{ 'Authorization' = "Bearer $($script:Token)" }
     }
 
-    $res = Invoke-RestMethod -Uri $Uri -Method $Method -Body:$body -ContentType "application/json;charset=UTF-8" -Headers:$header
-
-    <#
-    if ($res.StatusCode -eq "500") {
-        Write-Warning "Received status code 500 -> Refresh token."
-        $script:Token = Refresh-GSMGToken
-        $res = Invoke-GSMGRequest -Uri $Uri -Method $Method -Body $Body -RequiresToken:$RequiresToken
+    $res = Invoke-WebRequest -Uri $Uri -Method $Method -Body:$body -ContentType "application/json;charset=UTF-8" -Headers:$header -ErrorAction Ignore
+    
+    switch ($res.StatusCode) {
+        401 {
+            Write-Warning "Received status code 401 -> Refresh token."
+            $script:Token = Refresh-GSMGToken
+            $res = Invoke-GSMGRequest -Uri $Uri -Method $Method -Body $Body -RequiresToken:$RequiresToken
+            break
+        }
+        500 {
+            Write-Warning "Session expired..."
+            exit
+        }
     }
     
     $res = $res | ConvertFrom-Json
-    #>
 
     return $res
 }
