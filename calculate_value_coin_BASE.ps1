@@ -63,5 +63,6 @@ function Calculate-Balance($BaseMarket, $Balances) {
 }
 
 $pairs += Calculate-Balance -BaseMarket "USDT" -Balances $balances
+#$pairs += Calculate-Balance -BaseMarket "BUSD" -Balances $balances
 
 Get-BinanceTable -Pairs $Pairs
