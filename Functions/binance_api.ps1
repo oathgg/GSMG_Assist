@@ -97,3 +97,84 @@ function Query-24hTicker($Market) {
     $res = Query-Binance -Query "/api/v3/ticker/24hr?symbol=$Market"
     return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 }
+
+<#
+
+    https://stackoverflow.com/questions/50321891/how-do-binance-api-calculate-pricechangepercent-in-24h
+    1526171400000, // Open time
+    "0.00154030", // Open
+    "0.00154560", // High
+    "0.00153600", // Low
+    "0.00153780", // Close
+    "5716.55000000", // Volume
+    1526172299999, // Close time
+    "8.79961911", // Quote asset volume
+    729, // Number of trades
+    "2149.12000000", // Taker buy base asset volume
+    "3.30996242", // Taker buy quote asset volume
+    "0" // Ignore
+
+#>
+function Query-15mTicker($Market) {
+    $res = Query-Binance -Query "/api/v3/klines?symbol=$Market&interval=1m&limit=15"
+    $candles = $res | ConvertFrom-Json -ErrorAction SilentlyContinue
+
+    $1hChange = $null
+    if ($candles) {
+        $first = $candles | Select-Object -First 1
+        $last = $candles | Select-Object -Last 1
+
+        # (last.close - first.open) * 100 / first.open
+        $1hChange = ($last[4] - $first[1]) * 100 / $first[1];
+    }
+
+    return $1hChange
+}
+
+function Query-1hTicker($Market) {
+    $res = Query-Binance -Query "/api/v3/klines?symbol=$Market&interval=1m&limit=60"
+    $candles = $res | ConvertFrom-Json -ErrorAction SilentlyContinue
+
+    $1hChange = $null
+    if ($candles) {
+        $first = $candles | Select-Object -First 1
+        $last = $candles | Select-Object -Last 1
+
+        # (last.close - first.open) * 100 / first.open
+        $1hChange = ($last[4] - $first[1]) * 100 / $first[1];
+    }
+
+    return $1hChange
+}
+
+function Query-4hTicker($Market) {
+    $res = Query-Binance -Query "/api/v3/klines?symbol=$Market&interval=1m&limit=240"
+    $candles = $res | ConvertFrom-Json -ErrorAction SilentlyContinue
+
+    $change = $null
+    if ($candles) {
+        $first = $candles | Select-Object -First 1
+        $last = $candles | Select-Object -Last 1
+
+        # (last.close - first.open) * 100 / first.open
+        $change = ($last[4] - $first[1]) * 100 / $first[1];
+    }
+
+    return $change
+}
+
+function Query-6hTicker($Market) {
+    $res = Query-Binance -Query "/api/v3/klines?symbol=$Market&interval=1m&limit=360"
+    $candles = $res | ConvertFrom-Json -ErrorAction SilentlyContinue
+
+    $change = $null
+    if ($candles) {
+        $first = $candles | Select-Object -First 1
+        $last = $candles | Select-Object -Last 1
+
+        # (last.close - first.open) * 100 / first.open
+        $change = ($last[4] - $first[1]) * 100 / $first[1];
+    }
+
+    return $change
+}
