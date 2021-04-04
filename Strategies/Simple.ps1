@@ -1,26 +1,25 @@
 ﻿$markets = Get-GSMGMarkets
 foreach ($market in $markets) {
     $marketName = $market.market_name.Replace("Binance:", "")
-    $market24hInformation = Query-24hTicker($marketName)
-    $24hPriceChange = [float] $market24hInformation.priceChangePercent
+    [float] $24hPriceChange = (Query-24hTicker($marketName)).priceChangePercent
     $bagPct = [float] $market.vol_sells_worth / ([float] $market.managed_value_usd / 100)
 
-    $bemPct = "0"
+    $bemPct = "-2"
     $aggressivenessPct = "15"
-    
-    if ($24hPriceChange -le -12) {
+
+    if ($24hPriceChange -le -15) {
         $bemPct = "6"
-        $aggressivenessPct = "35"
-    } 
-    elseif ($24hPriceChange -le -8) {
-        $bemPct = "4"
         $aggressivenessPct = "25"
     } 
-    elseif ($bagPct -le 40 -and $24hPriceChange -le -2) {
+    elseif ($24hPriceChange -le -12) {
+        $bemPct = "4"
+        $aggressivenessPct = "20"
+    } 
+    elseif ($24hPriceChange -le -8) {
         $bemPct = "2"
-    }
-    elseif ($24hPriceChange -gt 2) {
-        $bemPct = "-2"
+    } 
+    elseif ($24hPriceChange -le -4) {
+        $bemPct = "0"
     }
 
     Set-GSMGSetting -Market $marketName -BemPct $bemPct -AggressivenessPct $aggressivenessPct
