@@ -66,7 +66,7 @@ foreach ($market in $markets) {
     $ceilingOfLastTwo = [Math]::Ceiling(($24hHistoryLast2 | Measure-Object -Sum).Sum / $24hHistoryLast2.Length)
     if ($24hHistoryLast1 -eq $null -or $currentMarketValuePct -ne $ceilingOfLastTwo) {
         Write-Host "`t- Adding $currentMarketValuePct to table."
-        $Global:BuyTheDip_24hHistory[$marketName]["24hChangePct"] += @($currentMarketValuePct)
+        [int[]]$Global:BuyTheDip_24hHistory[$marketName]["24hChangePct"] += @($currentMarketValuePct)
     }
 
     Write-Host "`t- BEM $bemPct"
