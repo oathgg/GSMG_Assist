@@ -92,6 +92,7 @@ function Query-MarketValue($Market) {
     return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 }
 
+#https://binance-docs.github.io/apidocs/spot/en/#24hr-ticker-price-change-statistics
 function Query-24hTicker($Market) {
     $res = Query-Binance -Query "/api/v3/ticker/24hr?symbol=$Market"
     return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
