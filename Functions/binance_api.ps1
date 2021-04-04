@@ -115,66 +115,33 @@ function Query-24hTicker($Market) {
     "0" // Ignore
 
 #>
-function Query-15mTicker($Market) {
-    $res = Query-Binance -Query "/api/v3/klines?symbol=$Market&interval=1m&limit=15"
+function Query-Ticker($Market, $TimeInMinutes) {
+    $res = Query-Binance -Query "/api/v3/klines?symbol=$Market&interval=1m&limit=$TimeInMinutes"
     $candles = $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 
-    $1hChange = $null
+    $change = $null
     if ($candles) {
         $first = $candles | Select-Object -First 1
         $last = $candles | Select-Object -Last 1
 
         # (last.close - first.open) * 100 / first.open
-        $1hChange = ($last[4] - $first[1]) * 100 / $first[1];
+        $change = ($last[4] - $first[1]) * 100 / $first[1];
     }
 
-    return $1hChange
+    return $change
+}
+function Query-15mTicker($Market) {
+    return Query-Ticker -Market $Market -TimeInMinutes 15
 }
 
 function Query-1hTicker($Market) {
-    $res = Query-Binance -Query "/api/v3/klines?symbol=$Market&interval=1m&limit=60"
-    $candles = $res | ConvertFrom-Json -ErrorAction SilentlyContinue
-
-    $1hChange = $null
-    if ($candles) {
-        $first = $candles | Select-Object -First 1
-        $last = $candles | Select-Object -Last 1
-
-        # (last.close - first.open) * 100 / first.open
-        $1hChange = ($last[4] - $first[1]) * 100 / $first[1];
-    }
-
-    return $1hChange
+    return Query-Ticker -Market $Market -TimeInMinutes 60
 }
 
 function Query-4hTicker($Market) {
-    $res = Query-Binance -Query "/api/v3/klines?symbol=$Market&interval=1m&limit=240"
-    $candles = $res | ConvertFrom-Json -ErrorAction SilentlyContinue
-
-    $change = $null
-    if ($candles) {
-        $first = $candles | Select-Object -First 1
-        $last = $candles | Select-Object -Last 1
-
-        # (last.close - first.open) * 100 / first.open
-        $change = ($last[4] - $first[1]) * 100 / $first[1];
-    }
-
-    return $change
+    return Query-Ticker -Market $Market -TimeInMinutes 240
 }
 
 function Query-6hTicker($Market) {
-    $res = Query-Binance -Query "/api/v3/klines?symbol=$Market&interval=1m&limit=360"
-    $candles = $res | ConvertFrom-Json -ErrorAction SilentlyContinue
-
-    $change = $null
-    if ($candles) {
-        $first = $candles | Select-Object -First 1
-        $last = $candles | Select-Object -Last 1
-
-        # (last.close - first.open) * 100 / first.open
-        $change = ($last[4] - $first[1]) * 100 / $first[1];
-    }
-
-    return $change
+    return Query-Ticker -Market $Market -TimeInMinutes 360
 }
