@@ -12,7 +12,7 @@ INFORMATION:
 #Default values, we want to be passive untill we get a good grip of the situation we are in.
 # Good values are, 8 in a bear market, 4 in a stable market
 [int] $minThreshold = -5 # I've chosen this number because its a nice decrease start value, most 24h candles are 30% when moving
-[int] $bemPct = -2
+[int] $bemPct = 0
 
 if ($Global:BuyTheDip_ParametersInitialized -eq $null) {
     $Global:BuyTheDip_24hHistory = @{}
@@ -37,7 +37,7 @@ foreach ($market in $markets) {
 
 
     if ($currentMarketValuePct -le $minThreshold) {
-        # We need to have at least 5 values to somehwat estimate a good average
+        # We need to have at least 10 values to somehwat estimate a good average
         if ($24hHistoryLast10.Count -gt 10) {
             # Round the last 2 values, because we might be hovering between -14 and -15 for example...
             # Hovering is a good sign, this might indicate that we have reached a support point.
@@ -54,9 +54,7 @@ foreach ($market in $markets) {
                     $difference = $24hHistoryLast1 - $currentMarketValuePct
                     Write-Host "`t- Advising to adjust BEM, difference between lastMarketValuePct and currentMarketValuePct is $difference. Substracting ($difference) from 24havg ($24hHistoryAvg) to calculate new BEM"
                     $bemPct = [Math]::Abs($24hHistoryAvg - $difference)
-                } else {
-                    $bemPct = 0 #Default GSMG setting
-                }
+                } 
             } 
         }
     }
@@ -64,9 +62,9 @@ foreach ($market in $markets) {
     # If we dont a lastMarketValuePct then that means there is nothing in the list, hence we add it
     # If we do have a list then we compare the last known value with our current value, if its the same we dont add it
     $ceilingOfLastTwo = [Math]::Ceiling(($24hHistoryLast2 | Measure-Object -Sum).Sum / $24hHistoryLast2.Length)
-    if ($24hHistoryLast1 -eq $null -or $currentMarketValuePct -ne $ceilingOfLastTwo) {
+    if ($24hHistoryLast1 -eq $null -or ($currentMarketValuePct -ne $ceilingOfLastTwo -and $currentMarketValuePct -ne $24hHistoryLast1)) {
         Write-Host "`t- Adding $currentMarketValuePct to table."
-        [int[]]$Global:BuyTheDip_24hHistory[$marketName]["24hChangePct"] += @($currentMarketValuePct)
+        $Global:BuyTheDip_24hHistory[$marketName]["24hChangePct"] += @($currentMarketValuePct)
     }
 
     Write-Host "`t- BEM $bemPct"
