@@ -5,15 +5,15 @@ foreach ($market in $markets) {
     $bagPct = [float] $market.vol_sells_worth / ([float] $market.managed_value_usd / 100)
 
     $bemPct = "-2"
-    $aggressivenessPct = "15"
+    $aggressivenessPct = "20"
 
     if ($24hPriceChange -le -15) {
         $bemPct = "6"
-        $aggressivenessPct = "25"
+        $aggressivenessPct = "30"
     } 
     elseif ($24hPriceChange -le -12) {
         $bemPct = "4"
-        $aggressivenessPct = "20"
+        $aggressivenessPct = "25"
     } 
     elseif ($24hPriceChange -le -8) {
         $bemPct = "2"
