@@ -157,8 +157,8 @@ function Query-1wTicker($Market) {
     return Query-TickerChangePct -Market $Market -Interval 1h -CandleLimit 168
 }
 
-function Query-WeeklyAthChangePct($Market) {
-    $candles = Query-Ticker -Market $Market -Interval 1h -CandleLimit 168
+function Query-AthChangePct($Market, $Interval, $CandleLimit) {
+    $candles = Query-Ticker -Market $Market -Interval $Interval -CandleLimit $CandleLimit
 
     $allTimeHighCandle = $candles | Select-Object -First 1
     foreach ($candle in $candles) {
@@ -172,5 +172,15 @@ function Query-WeeklyAthChangePct($Market) {
 
     $change = Get-ChangePct -FirstOpen $allTimeHighCandle[1] -LastClose $current[4]
 
+    return $change
+}
+
+function Query-7dAthChangePct($Market) {
+    $change = Query-AthChangePct -Market $Market -Interval 1h -CandleLimit 168
+    return $change
+}
+
+function Query-30dAthChangePct($Market) {
+    $change = Query-AthChangePct -Market $Market -Interval 1h -CandleLimit 720
     return $change
 }
