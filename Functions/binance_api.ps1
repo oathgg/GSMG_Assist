@@ -1,6 +1,6 @@
 ﻿$Script:TimeDifference = $null
 
-#API DOCS: https://binance-docs.github.io/apidocs/spot/en/#current-average-price
+#API DOCS: #https://binance-docs.github.io/apidocs/
 
 function Calculate-TimeDifference($TimeStamp) {
     if (-not $Script:TimeDifference) {
@@ -92,12 +92,6 @@ function Query-MarketValue($Market) {
     return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 }
 
-#https://binance-docs.github.io/apidocs/spot/en/#24hr-ticker-price-change-statistics
-function Query-24hTicker($Market) {
-    $res = Query-Binance -Query "/api/v3/ticker/24hr?symbol=$Market"
-    return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
-}
-
 <#
 
     https://stackoverflow.com/questions/50321891/how-do-binance-api-calculate-pricechangepercent-in-24h
@@ -115,33 +109,68 @@ function Query-24hTicker($Market) {
     "0" // Ignore
 
 #>
-function Query-Ticker($Market, $TimeInMinutes) {
-    $res = Query-Binance -Query "/api/v3/klines?symbol=$Market&interval=1m&limit=$TimeInMinutes"
+
+function Get-ChangePct($FirstOpen, $LastClose) {
+    $change = ($LastClose - $FirstOpen) * 100 / $FirstOpen;
+    return $change
+}
+
+function Query-Ticker($Market, $Interval, $CandleLimit) {
+    $res = Query-Binance -Query "/api/v3/klines?symbol=$Market&interval=$Interval&limit=$CandleLimit"
     $candles = $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 
-    $change = $null
-    if ($candles) {
-        $first = $candles | Select-Object -First 1
-        $last = $candles | Select-Object -Last 1
+    return $candles
+}
 
-        # (last.close - first.open) * 100 / first.open
-        $change = ($last[4] - $first[1]) * 100 / $first[1];
-    }
+function Query-TickerChangePct($Market, $Interval, $CandleLimit) {
+    $candles = Query-Ticker -Market $Market -Interval $Interval -CandleLimit $CandleLimit
+
+    $first = $candles | Select-Object -First 1
+    $last = $candles | Select-Object -Last 1
+    $change = Get-ChangePct -FirstOpen $First[1] -LastClose $Last[4]
 
     return $change
 }
+
 function Query-15mTicker($Market) {
-    return Query-Ticker -Market $Market -TimeInMinutes 15
+    return Query-TickerChangePct -Market $Market -Interval 1m -CandleLimit 15
 }
 
 function Query-1hTicker($Market) {
-    return Query-Ticker -Market $Market -TimeInMinutes 60
+    return Query-TickerChangePct -Market $Market -Interval 1m -CandleLimit 60
 }
 
 function Query-4hTicker($Market) {
-    return Query-Ticker -Market $Market -TimeInMinutes 240
+    return Query-TickerChangePct -Market $Market -Interval 1m -CandleLimit 240
 }
 
 function Query-6hTicker($Market) {
-    return Query-Ticker -Market $Market -TimeInMinutes 360
+    return Query-TickerChangePct -Market $Market -Interval 1m -CandleLimit 360
+}
+
+function Query-24hTicker($Market) {
+    $res = Query-Binance -Query "/api/v3/ticker/24hr?symbol=$Market"
+    return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
+}
+
+function Query-1wTicker($Market) {
+    return Query-TickerChangePct -Market $Market -Interval 1h -CandleLimit 168
+}
+
+function Query-WeeklyAthChangePct($Market) {
+    $candles = Query-Ticker -Market $Market -Interval 1h -CandleLimit 168
+
+    $allTimeHighCandle = $candles | Select-Object -First 1
+    foreach ($candle in $candles) {
+        $close = $candle[4]
+        if ($close -gt $allTimeHighCandle[4]) {
+            $allTimeHighCandle = $candle
+        }
+    }
+
+    $current = $candles | Select-Object -Last 1
+
+    $change = Get-ChangePct -FirstOpen $allTimeHighCandle[1] -LastClose $current[4]
+
+    return $change
 }

@@ -10,22 +10,21 @@ INFORMATION:
 #>
 
 #Default values, we want to be passive untill we get a good grip of the situation we are in.
-[int] $minThreshold = -5 # I've chosen this number because its a nice decrease start value, most 24h candles are moving 10-20%
+[int] $minThreshold = -10 # I've chosen this number because its a nice decrease start value, most 24h candles are moving 10-20%
 [int] $bemPct = 0 # Defensive at first
 
 #$Global:BuyTheDip_24hHistory = @{}
 #$Global:BuyTheDip_24hHistory["VETBUSD"] = @{"24hChangePct"=@(-5,-6,-5,-6,-5,-6,-5,-6,-5,-6,-5,-6,-5,-6,-5,-6,-5,-6,-5,-6)}
 #$Global:BuyTheDip_24hHistory["VETBUSD"] = @{"24hChangePct"=@(-10,-11,-10,-11,-10,-11,-10,-11,-10,-11,-10,-11,-10,-11,-10,-11)}
-#$Global:BuyTheDip_24hHistory["VETBUSD"] = @{"24hChangePct"=@(12,10,8,6,4,2,0,-2,-4,-6,-8,-10,-12,-11,-14,-16,-18,-20,-21,-20,-19,-18)}
+#$Global:BuyTheDip_24hHistory["ROSEBUSD"] = @{"24hChangePct"=@(-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13)}
 
 #$markets = Get-GSMGMarkets
 #foreach ($market in $markets) {
-    $marketName = "VETBUSD"
+    $marketName = "ROSEBUSD"
     Write-Host "$MarketName"
-    $marketName = $market.market_name.Replace("$($market.exchange):", "")
     
-    [int] $currentMarketValuePct = -4
-    #[int] $currentMarketValuePct = (Query-24hTicker($marketName)).priceChangePercent
+    #[int] $currentMarketValuePct = -4
+    [int] $currentMarketValuePct = Query-WeeklyAthChangePct($marketName)
 
     if (-not $Global:BuyTheDip_24hHistory.Contains($marketName)) {
         $Global:BuyTheDip_24hHistory[$marketName] = @{}
@@ -39,7 +38,7 @@ INFORMATION:
 
     if ($currentMarketValuePct -le $minThreshold) {
         # We need to have at least 5 values to somehwat estimate a good average
-        if ($24hHistoryLast10.Count -gt 10) {
+        if ($24hHistoryLast10.Count -eq 10) {
             # Round the last 2 values, because we might be hovering between -14 and -15 for example...
             # Hovering is a good sign, this might indicate that we have reached a support point.
             $valueToCompareWith = [Math]::Floor(($24hHistoryLast2 | Measure-Object -Sum).Sum / $24hHistoryLast2.Length)
@@ -65,7 +64,7 @@ INFORMATION:
     $ceilingOfLastTwo = [Math]::Ceiling(($24hHistoryLast2 | Measure-Object -Sum).Sum / $24hHistoryLast2.Length)
     if ($24hHistoryLast1 -eq $null -or ($currentMarketValuePct -ne $ceilingOfLastTwo -and $currentMarketValuePct -ne $24hHistoryLast1)) {
         Write-Host "`t- Adding $currentMarketValuePct to table."
-        $Global:BuyTheDip_24hHistory[$marketName]["24hChangePct"] += @($currentMarketValuePct)
+        [int[]]$Global:BuyTheDip_24hHistory[$marketName]["24hChangePct"] += @($currentMarketValuePct)
     }
 
     Write-Host "`t- BEM $bemPct"
