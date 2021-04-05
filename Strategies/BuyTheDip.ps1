@@ -11,7 +11,6 @@ INFORMATION:
 
 #Default values, we want to be passive untill we get a good grip of the situation we are in.
 [int] $minThreshold = -10 # I've chosen this number because its a nice decrease start value
-[int] $bemPct = 0 # The bot works fine with 0, hence we leave it at 0 as default
 
 if ($Global:BuyTheDip_ParametersInitialized -eq $null) {
     $Global:BuyTheDip_24hHistory = @{}
@@ -20,8 +19,10 @@ if ($Global:BuyTheDip_ParametersInitialized -eq $null) {
 
 $markets = Get-GSMGMarkets
 foreach ($market in $markets) {
+    [int] $bemPct = -2 # Default we need to be defensive
+
     $marketName = $market.market_name.Replace("$($market.exchange):", "")
-    [int] $currentMarketValuePct = Query-WeeklyAthChangePct($marketName)
+    [int] $currentMarketValuePct = Query-7dAthChangePct($marketName)
 
     if (-not $Global:BuyTheDip_24hHistory.Contains($marketName)) {
         $Global:BuyTheDip_24hHistory[$marketName] = @{}
@@ -32,6 +33,11 @@ foreach ($market in $markets) {
     $24hHistoryLast1 = $24hChangePct | Select-Object -Last 1
     $24hHistoryLast2 = $24hChangePct | Select-Object -Last 2
     $24hHistoryLast10 = $24hChangePct | Select-Object -Last 10
+
+    if ($currentMarketValuePct -le -5) {
+        # If the market is lesser or equal to -5 we can set the bot on normal mode
+        $bemPct = 0
+    }
 
     if ($currentMarketValuePct -le $minThreshold) {
         # We need to have at least 10 values to somehwat estimate a good average
