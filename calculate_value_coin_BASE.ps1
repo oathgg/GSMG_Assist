@@ -1,4 +1,4 @@
-﻿Clear-Host
+﻿cls
 
 $curPath = $PSScriptRoot
 if (-not $curPath) {
@@ -11,14 +11,14 @@ if (-not $curPath) {
 . "$curPath\Functions\Tools.ps1"
 
 #Write-Host "Querying exchange information..."
-#$exchangeInfo = Get-ExchangeInfo
+#$exchangeInfo = Query-ExchangeInfo
 
 Write-Host "Querying Account information..."
-$accountInformation = Get-AccountInformation
+$accountInformation = Query-Account
 $balances = $accountInformation.balances | Where-Object { [float]$_.Free -gt 0 -or [float]$_.Locked -gt 0 } | Sort-Object asset
 $pairs = @{}
 
-function Get-Pairs($BaseMarket, $Balances) {
+function Calculate-Balance($BaseMarket, $Balances) {
     $pairs = @{}
 
     if ($balances) {
@@ -39,7 +39,7 @@ function Get-Pairs($BaseMarket, $Balances) {
             }
 
             $timeago = (Get-Date).AddYears(-1)
-            $Trades = Get-MyTrades -Symbol $market -From $timeago
+            $Trades = Query-MyTrades -Symbol $market -From $timeago
 
             foreach ($trade in $Trades) {
                 if ($trade.isBuyer) {
@@ -62,7 +62,7 @@ function Get-Pairs($BaseMarket, $Balances) {
     return $pairs
 }
 
-$pairs += Get-Pairs -BaseMarket "USDT" -Balances $balances
-#$pairs += Get-Pairs -BaseMarket "BUSD" -Balances $balances
+$pairs += Calculate-Balance -BaseMarket "USDT" -Balances $balances
+#$pairs += Calculate-Balance -BaseMarket "BUSD" -Balances $balances
 
 Get-BinanceTable -Pairs $Pairs
