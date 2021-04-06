@@ -22,7 +22,7 @@ foreach ($market in $markets) {
     [int] $bemPct = -2 # Default we need to be defensive
 
     $marketName = $market.market_name.Replace("$($market.exchange):", "")
-    [int] $currentMarketValuePct = Query-30dAthChangePct($marketName)
+    [int] $currentMarketValuePct = Get-30dAthChangePct($marketName)
 
     if (-not $Global:BuyTheDip_24hHistory.Contains($marketName)) {
         $Global:BuyTheDip_24hHistory[$marketName] = @{}

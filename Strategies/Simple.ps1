@@ -1,7 +1,7 @@
 ﻿$markets = Get-GSMGMarkets
 foreach ($market in $markets) {
     $marketName = $market.market_name.Replace("Binance:", "")
-    [float] $24hPriceChange = (Query-24hTicker($marketName)).priceChangePercent
+    [float] $24hPriceChange = (Get-24hTicker($marketName)).priceChangePercent
     $bagPct = [float] $market.vol_sells_worth / ([float] $market.managed_value_usd / 100)
 
     $bemPct = "0"

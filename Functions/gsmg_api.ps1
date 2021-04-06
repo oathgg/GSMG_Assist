@@ -29,7 +29,7 @@ function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
             $gsmgMfaCode = Read-Host "Please enter the GSMG MFA code"
             New-GSMGAuthentication -Email $global:GSMGEmail -Password $global:GSMGPassword -Code $gsmgMfaCode
         } else {
-            Refresh-GSMGToken
+            New-GSMGToken
         }
         $header = Get-GSMGHeader
     }
@@ -49,7 +49,7 @@ function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
     return $res
 }
 
-function Refresh-GSMGToken() {
+function New-GSMGToken() {
     $now = Get-Date
     if ($now -gt $script:TokenExpiresAt) {
         $header = Get-GSMGHeader
@@ -80,18 +80,18 @@ function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPc
 
     $hashSet = @{}
 
-    if ($BemPct -ne $null) {
+    if ($null -ne $BemPct) {
         $hashSet += @{"bem_pct"=$BemPct}
     }
-    if ($AggressivenessPct -ne $null) {
+    if ($null -ne $AggressivenessPct) {
         $hashSet += @{"aggressiveness_pct"=$AggressivenessPct}
     }
-    if ($MinTradeProfitPct -ne $null) {
+    if ($null -ne $MinTradeProfitPct) {
         $hashSet += @{"min_trade_profit_pct"=$MinTradeProfitPct}
     }
 
     $body = ConvertTo-GSMGMessage -Hashset $hashSet
-    $res = Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken
+    Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken
     Write-Host "Configured '$Market', with values '$body'"
 }
 

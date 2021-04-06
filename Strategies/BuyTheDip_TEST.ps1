@@ -24,7 +24,7 @@ INFORMATION:
     Write-Host "$MarketName"
     
     #[int] $currentMarketValuePct = -4
-    [int] $currentMarketValuePct = Query-WeeklyAthChangePct($marketName)
+    [int] $currentMarketValuePct = Get-WeeklyAthChangePct($marketName)
 
     if (-not $Global:BuyTheDip_24hHistory.Contains($marketName)) {
         $Global:BuyTheDip_24hHistory[$marketName] = @{}

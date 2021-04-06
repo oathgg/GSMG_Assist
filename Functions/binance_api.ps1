@@ -2,9 +2,9 @@
 
 #API DOCS: #https://binance-docs.github.io/apidocs/
 
-function Calculate-TimeDifference($TimeStamp) {
+function Get-TimeDifference($TimeStamp) {
     if (-not $Script:TimeDifference) {
-        $serverTime = Query-ServerTimestamp
+        $serverTime = Get-ServerTimestamp
         $timeDifference = $TimeStamp - $serverTime.serverTime
         if ($timeDifference -gt 0) {
             Write-Warning "There is a time difference between us and the binance server time, correcting time difference by $timeDifference ms"
@@ -21,7 +21,7 @@ function New-BinanceTimestamp($Date) {
     }
 
     $TimeStamp = (Get-Date ($Date).ToUniversalTime() -UFormat %s).replace(',', '').replace('.', '').SubString(0,13)
-    $TimeStamp -= (Calculate-TimeDifference -TimeStamp $TimeStamp)
+    $TimeStamp -= (Get-TimeDifference -TimeStamp $TimeStamp)
 
     return $TimeStamp
 }
@@ -38,7 +38,7 @@ function New-BinanceSignature($Query) {
     return $signature
 }
 
-function Query-Binance($Query, [Switch] $RequiresSignature) {
+function Invoke-BinanceRestMethod($Query, [Switch] $RequiresSignature) {
     $url = "https://api.binance.com" + $Query
 
     if ($RequiresSignature) {
@@ -59,36 +59,36 @@ function Query-Binance($Query, [Switch] $RequiresSignature) {
     return $res
 }
 
-function Query-ExchangeInfo() {
-    $res = Query-Binance -Query "/api/v3/exchangeInfo"
+function Get-ExchangeInfo() {
+    $res = Invoke-BinanceRestMethod -Query "/api/v3/exchangeInfo"
     return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 }
 
-function Query-ServerTimestamp() {
-    $res = Query-Binance -Query "/api/v3/time"
+function Get-ServerTimestamp() {
+    $res = Invoke-BinanceRestMethod -Query "/api/v3/time"
     return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 }
 
-function Query-Account() {
+function Get-AccountInformation() {
     $timestamp = New-BinanceTimestamp
-    $res = Query-Binance -Query "/api/v3/account?recvWindow=50000&timestamp=$timestamp" -RequiresSignature
+    $res = Invoke-BinanceRestMethod -Query "/api/v3/account?recvWindow=50000&timestamp=$timestamp" -RequiresSignature
     return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 }
 
-function Query-MyTrades($Symbol, $From) {
+function Get-MyTrades($Symbol, $From) {
     $timestamp = New-BinanceTimestamp
     $startTime = New-BinanceTimestamp($From)
-    $res = Query-Binance -Query "/api/v3/myTrades?timestamp=$timestamp&symbol=$Symbol&recvWindow=50000&startTime=$startTime" -RequiresSignature -RecVWindow 50000
+    $res = Invoke-BinanceRestMethod -Query "/api/v3/myTrades?timestamp=$timestamp&symbol=$Symbol&recvWindow=50000&startTime=$startTime" -RequiresSignature -RecVWindow 50000
     return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 }
 
 function Test-BinanceConnection() {
-    $res = Query-Binance -Query "/api/v3/ping"
+    $res = Invoke-BinanceRestMethod -Query "/api/v3/ping"
     return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 }
 
-function Query-MarketValue($Market) {
-    $res = Query-Binance -Query "/api/v3/ticker/price?symbol=$Market"
+function Get-MarketValue($Market) {
+    $res = Invoke-BinanceRestMethod -Query "/api/v3/ticker/price?symbol=$Market"
     return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 }
 
@@ -115,15 +115,15 @@ function Get-ChangePct($FirstOpen, $LastClose) {
     return $change
 }
 
-function Query-Ticker($Market, $Interval, $CandleLimit) {
-    $res = Query-Binance -Query "/api/v3/klines?symbol=$Market&interval=$Interval&limit=$CandleLimit"
+function Get-Ticker($Market, $Interval, $CandleLimit) {
+    $res = Invoke-BinanceRestMethod -Query "/api/v3/klines?symbol=$Market&interval=$Interval&limit=$CandleLimit"
     $candles = $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 
     return $candles
 }
 
-function Query-TickerChangePct($Market, $Interval, $CandleLimit) {
-    $candles = Query-Ticker -Market $Market -Interval $Interval -CandleLimit $CandleLimit
+function Get-TickerChangePct($Market, $Interval, $CandleLimit) {
+    $candles = Get-Ticker -Market $Market -Interval $Interval -CandleLimit $CandleLimit
 
     $first = $candles | Select-Object -First 1
     $last = $candles | Select-Object -Last 1
@@ -132,33 +132,33 @@ function Query-TickerChangePct($Market, $Interval, $CandleLimit) {
     return $change
 }
 
-function Query-15mTicker($Market) {
-    return Query-TickerChangePct -Market $Market -Interval 1m -CandleLimit 15
+function Get-15mTicker($Market) {
+    return Get-TickerChangePct -Market $Market -Interval 1m -CandleLimit 15
 }
 
-function Query-1hTicker($Market) {
-    return Query-TickerChangePct -Market $Market -Interval 1m -CandleLimit 60
+function Get-1hTicker($Market) {
+    return Get-TickerChangePct -Market $Market -Interval 1m -CandleLimit 60
 }
 
-function Query-4hTicker($Market) {
-    return Query-TickerChangePct -Market $Market -Interval 1m -CandleLimit 240
+function Get-4hTicker($Market) {
+    return Get-TickerChangePct -Market $Market -Interval 1m -CandleLimit 240
 }
 
-function Query-6hTicker($Market) {
-    return Query-TickerChangePct -Market $Market -Interval 1m -CandleLimit 360
+function Get-6hTicker($Market) {
+    return Get-TickerChangePct -Market $Market -Interval 1m -CandleLimit 360
 }
 
-function Query-24hTicker($Market) {
-    $res = Query-Binance -Query "/api/v3/ticker/24hr?symbol=$Market"
+function Get-24hTicker($Market) {
+    $res = Invoke-BinanceRestMethod -Query "/api/v3/ticker/24hr?symbol=$Market"
     return $res | ConvertFrom-Json -ErrorAction SilentlyContinue
 }
 
-function Query-1wTicker($Market) {
-    return Query-TickerChangePct -Market $Market -Interval 1h -CandleLimit 168
+function Get-1wTicker($Market) {
+    return Get-TickerChangePct -Market $Market -Interval 1h -CandleLimit 168
 }
 
-function Query-AthChangePct($Market, $Interval, $CandleLimit) {
-    $candles = Query-Ticker -Market $Market -Interval $Interval -CandleLimit $CandleLimit
+function Get-AthChangePct($Market, $Interval, $CandleLimit) {
+    $candles = Get-Ticker -Market $Market -Interval $Interval -CandleLimit $CandleLimit
 
     $allTimeHighCandle = $candles | Select-Object -First 1
     foreach ($candle in $candles) {
@@ -175,17 +175,17 @@ function Query-AthChangePct($Market, $Interval, $CandleLimit) {
     return $change
 }
 
-function Query-7dAthChangePct($Market) {
-    $change = Query-AthChangePct -Market $Market -Interval 1h -CandleLimit 168
+function Get-7dAthChangePct($Market) {
+    $change = Get-AthChangePct -Market $Market -Interval 1h -CandleLimit 168
     return $change
 }
 
-function Query-14dAthChangePct($Market) {
-    $change = Query-AthChangePct -Market $Market -Interval 1h -CandleLimit 336
+function Get-14dAthChangePct($Market) {
+    $change = Get-AthChangePct -Market $Market -Interval 1h -CandleLimit 336
     return $change
 }
 
-function Query-30dAthChangePct($Market) {
-    $change = Query-AthChangePct -Market $Market -Interval 1h -CandleLimit 720
+function Get-30dAthChangePct($Market) {
+    $change = Get-AthChangePct -Market $Market -Interval 1h -CandleLimit 720
     return $change
 }

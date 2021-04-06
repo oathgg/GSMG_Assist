@@ -11,10 +11,10 @@ if (-not $curPath) {
 . "$curPath\Functions\Tools.ps1"
 
 #Write-Host "Querying exchange information..."
-#$exchangeInfo = Query-ExchangeInfo
+#$exchangeInfo = Get-ExchangeInfo
 
 Write-Host "Querying Account information..."
-$accountInformation = Query-Account
+$accountInformation = Get-AccountInformation
 $balances = $accountInformation.balances | Where-Object { [float]$_.Free -gt 0 -or [float]$_.Locked -gt 0 } | Sort-Object asset
 $pairs = @{}
 
@@ -39,7 +39,7 @@ function Get-Pairs($Balances) {
             foreach ($symbol in @("USDT","BUSD")) {
                 $market = $asset + $symbol
                 $timeago = (Get-Date).AddYears(-1)
-                $Trades = Query-MyTrades -Symbol $market -From $timeago
+                $Trades = Get-MyTrades -Symbol $market -From $timeago
 
                 foreach ($trade in $Trades) {
                     if ($trade.isBuyer) {

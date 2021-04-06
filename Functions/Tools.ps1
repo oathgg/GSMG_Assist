@@ -12,8 +12,8 @@
                 -and $marketName -notmatch "BUSD") {
                     $marketName += "USDT" # Set a default market
                 }
-                $currentMarketPrice = (Query-MarketValue($marketName)).price
-                if ($currentMarketPrice -eq $null) {
+                $currentMarketPrice = (Get-MarketValue($marketName)).price
+                if ($null -eq $currentMarketPrice) {
                     $currentMarketPrice = 1
                 }
                 $total = $pair.Total
