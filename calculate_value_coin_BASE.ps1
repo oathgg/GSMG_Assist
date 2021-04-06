@@ -14,11 +14,11 @@ if (-not $curPath) {
 #$exchangeInfo = Query-ExchangeInfo
 
 Write-Host "Querying Account information..."
-$accountInformation = Query-Account
+$accountInformation = Get-AccountInformation
 $balances = $accountInformation.balances | Where-Object { [float]$_.Free -gt 0 -or [float]$_.Locked -gt 0 } | Sort-Object asset
 $pairs = @{}
 
-function Calculate-Balance($BaseMarket, $Balances) {
+function Get-Balance($BaseMarket, $Balances) {
     $pairs = @{}
 
     if ($balances) {
@@ -39,7 +39,7 @@ function Calculate-Balance($BaseMarket, $Balances) {
             }
 
             $timeago = (Get-Date).AddYears(-1)
-            $Trades = Query-MyTrades -Symbol $market -From $timeago
+            $Trades = Get-MyTrades -Symbol $market -From $timeago
 
             foreach ($trade in $Trades) {
                 if ($trade.isBuyer) {
@@ -62,7 +62,7 @@ function Calculate-Balance($BaseMarket, $Balances) {
     return $pairs
 }
 
-$pairs += Calculate-Balance -BaseMarket "USDT" -Balances $balances
-#$pairs += Calculate-Balance -BaseMarket "BUSD" -Balances $balances
+$pairs += Get-Balance -BaseMarket "USDT" -Balances $balances
+#$pairs += Get-Balance -BaseMarket "BUSD" -Balances $balances
 
 Get-BinanceTable -Pairs $Pairs
