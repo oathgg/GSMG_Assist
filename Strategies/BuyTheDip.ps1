@@ -12,11 +12,6 @@ INFORMATION:
 #Default values, we want to be passive untill we get a good grip of the situation we are in.
 [int] $minThreshold = -10 # I've chosen this number because its a nice decrease start value
 
-if ($Global:BuyTheDip_ParametersInitialized -eq $null) {
-    $Global:BuyTheDip_24hHistory = @{}
-    $Global:BuyTheDip_ParametersInitialized = $true
-}
-
 $markets = Get-GSMGMarkets
 foreach ($market in $markets) {
     [int] $bemPct = -2 # Default we need to be defensive
@@ -24,20 +19,14 @@ foreach ($market in $markets) {
     $marketName = $market.market_name.Replace("$($market.exchange):", "")
     [int] $currentMarketValuePct = Get-30dAthChangePct($marketName)
 
-    if (-not $Global:BuyTheDip_24hHistory.Contains($marketName)) {
-        $Global:BuyTheDip_24hHistory[$marketName] = @{}
+    if ($currentMarketValuePct -le -5) {
+        $bemPct = 0
     }
 
-    $Global:BuyTheDip_24hHistory[$marketName]["24hChangePct"] = $Global:BuyTheDip_24hHistory[$marketName]["24hChangePct"] | Select-Object -Last 10
-    $24hChangePct = $Global:BuyTheDip_24hHistory[$marketName]["24hChangePct"]
+    $24hChangePct = Get-30dLastPctChanges -Market $marketName -Count 10
     $24hHistoryLast1 = $24hChangePct | Select-Object -Last 1
     $24hHistoryLast2 = $24hChangePct | Select-Object -Last 2
     $24hHistoryLast10 = $24hChangePct | Select-Object -Last 10
-
-    if ($currentMarketValuePct -le -5) {
-        # If the market is lesser or equal to -5 we can set the bot on normal mode
-        $bemPct = 0
-    }
 
     # We need to have at least 10 values to somehwat estimate a good average
     if ($currentMarketValuePct -le $minThreshold -and $24hHistoryLast10.Count -eq 10) {
@@ -55,17 +44,9 @@ foreach ($market in $markets) {
             $24hHistoryAvg = [Math]::Ceiling(($24hHistoryLast10 | Measure-Object -Sum).Sum / $24hHistoryLast10.Length)
             if ($currentMarketValuePct -le $24hHistoryAvg) {
                 $difference = $24hHistoryLast1 - $currentMarketValuePct
-                $bemPct = [Math]::Abs($24hHistoryAvg - $difference) # We should use the BEM assist tool for this...
+                $bemPct = 2
             } 
         } 
-    }
-
-    # If we dont a lastMarketValuePct then that means there is nothing in the list, hence we add it
-    # If we do have a list then we compare the last known value with our current value, if its the same we dont add it
-    $ceilingOfLastTwo = [Math]::Ceiling(($24hHistoryLast2 | Measure-Object -Sum).Sum / $24hHistoryLast2.Length)
-    if ($24hHistoryLast1 -eq $null -or ($currentMarketValuePct -ne $ceilingOfLastTwo -and $currentMarketValuePct -ne $24hHistoryLast1)) {
-        #Write-Host "`t- Adding $currentMarketValuePct to table."
-        [int[]]$Global:BuyTheDip_24hHistory[$marketName]["24hChangePct"] += @($currentMarketValuePct)
     }
 
     Set-GSMGSetting -Market $marketName -BemPct $bemPct
