@@ -22,7 +22,7 @@ foreach ($market in $markets) {
     [int] $bemPct = -2 # Default we need to be defensive
 
     $marketName = $market.market_name.Replace("$($market.exchange):", "")
-    [int] $currentMarketValuePct = Query-7dAthChangePct($marketName)
+    [int] $currentMarketValuePct = Query-30dAthChangePct($marketName)
 
     if (-not $Global:BuyTheDip_24hHistory.Contains($marketName)) {
         $Global:BuyTheDip_24hHistory[$marketName] = @{}
@@ -39,27 +39,25 @@ foreach ($market in $markets) {
         $bemPct = 0
     }
 
-    if ($currentMarketValuePct -le $minThreshold) {
-        # We need to have at least 10 values to somehwat estimate a good average
-        if ($24hHistoryLast10.Count -eq 10) {
-            # Round the last 2 values, because we might be hovering between -14 and -15 for example...
-            # Hovering is a good sign, this might indicate that we have reached a support point.
-            $valueToCompareWith = [Math]::Floor(($24hHistoryLast2 | Measure-Object -Sum).Sum / $24hHistoryLast2.Length)
+    # We need to have at least 10 values to somehwat estimate a good average
+    if ($currentMarketValuePct -le $minThreshold -and $24hHistoryLast10.Count -eq 10) {
+        # Round the last 2 values, because we might be hovering between -14 and -15 for example...
+        # Hovering is a good sign, this might indicate that we have reached a support point.
+        $valueToCompareWith = [Math]::Floor(($24hHistoryLast2 | Measure-Object -Sum).Sum / $24hHistoryLast2.Length)
 
-            # If we're higher than our valueToCompareWith value it means the market is going up
-            # The current market value needs to be less or equal to the 24h history avg, if we're lower then that means we have most likely missed our buying opportunity.
-            if ($currentMarketValuePct -gt $valueToCompareWith) {
-                # We're using the last 10 average to indicate when to stop our buy action
-                # For example, @(-11, -12, -13, -14, -15, -16, -17, -18, -19, -20) will give an average of -15.5
-                # In this case we will buy once the market goes to -19, until we reach the average count.
-                # Do notice, that the average count will move up, as the market will also go up, this way we try to buy in a dip.
-                $24hHistoryAvg = [Math]::Ceiling(($24hHistoryLast10 | Measure-Object -Sum).Sum / $24hHistoryLast10.Length)
-                if ($currentMarketValuePct -le $24hHistoryAvg) {
-                    $difference = $24hHistoryLast1 - $currentMarketValuePct
-                    $bemPct = [Math]::Abs($24hHistoryAvg - $difference) # We should use the BEM assist tool for this...
-                } 
+        # If we're higher than our valueToCompareWith value it means the market is going up
+        # The current market value needs to be less or equal to the 24h history avg, if we're lower then that means we have most likely missed our buying opportunity.
+        if ($currentMarketValuePct -gt $valueToCompareWith) {
+            # We're using the last 10 average to indicate when to stop our buy action
+            # For example, @(-11, -12, -13, -14, -15, -16, -17, -18, -19, -20) will give an average of -15.5
+            # In this case we will buy once the market goes to -19, until we reach the average count.
+            # Do notice, that the average count will move up, as the market will also go up, this way we try to buy in a dip.
+            $24hHistoryAvg = [Math]::Ceiling(($24hHistoryLast10 | Measure-Object -Sum).Sum / $24hHistoryLast10.Length)
+            if ($currentMarketValuePct -le $24hHistoryAvg) {
+                $difference = $24hHistoryLast1 - $currentMarketValuePct
+                $bemPct = [Math]::Abs($24hHistoryAvg - $difference) # We should use the BEM assist tool for this...
             } 
-        }
+        } 
     }
 
     # If we dont a lastMarketValuePct then that means there is nothing in the list, hence we add it
