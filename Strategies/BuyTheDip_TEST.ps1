@@ -62,7 +62,7 @@ INFORMATION:
     # If we dont a lastMarketValuePct then that means there is nothing in the list, hence we add it
     # If we do have a list then we compare the last known value with our current value, if its the same we dont add it
     $ceilingOfLastTwo = [Math]::Ceiling(($24hHistoryLast2 | Measure-Object -Sum).Sum / $24hHistoryLast2.Length)
-    if ($24hHistoryLast1 -eq $null -or ($currentMarketValuePct -ne $ceilingOfLastTwo -and $currentMarketValuePct -ne $24hHistoryLast1)) {
+    if ($null -eq $24hHistoryLast1 -or ($currentMarketValuePct -ne $ceilingOfLastTwo -and $currentMarketValuePct -ne $24hHistoryLast1)) {
         Write-Host "`t- Adding $currentMarketValuePct to table."
         [int[]]$Global:BuyTheDip_24hHistory[$marketName]["24hChangePct"] += @($currentMarketValuePct)
     }

@@ -24,7 +24,7 @@ foreach ($market in $markets) {
     }
 
     $24hChangePct = Get-30dPctChanges -Market $marketName -Count 10
-    $24hHistoryLast1 = $24hChangePct | Select-Object -Last 1
+    #$24hHistoryLast1 = $24hChangePct | Select-Object -Last 1
     $24hHistoryLast2 = $24hChangePct | Select-Object -Last 2
     $24hHistoryLast10 = $24hChangePct | Select-Object -Last 10
 
@@ -43,7 +43,7 @@ foreach ($market in $markets) {
             # Do notice, that the average count will move up, as the market will also go up, this way we try to buy in a dip.
             $24hHistoryAvg = [Math]::Ceiling(($24hHistoryLast10 | Measure-Object -Sum).Sum / $24hHistoryLast10.Length)
             if ($currentMarketValuePct -le $24hHistoryAvg) {
-                $difference = $24hHistoryLast1 - $currentMarketValuePct
+                #$difference = $24hHistoryLast1 - $currentMarketValuePct
                 $bemPct = 2
             } 
         } 
