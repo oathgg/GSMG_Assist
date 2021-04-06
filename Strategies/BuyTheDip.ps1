@@ -23,7 +23,7 @@ foreach ($market in $markets) {
         $bemPct = 0
     }
 
-    $24hChangePct = Get-30dLastPctChanges -Market $marketName -Count 10
+    $24hChangePct = Get-30dPctChanges -Market $marketName -Count 10
     $24hHistoryLast1 = $24hChangePct | Select-Object -Last 1
     $24hHistoryLast2 = $24hChangePct | Select-Object -Last 2
     $24hHistoryLast10 = $24hChangePct | Select-Object -Last 10

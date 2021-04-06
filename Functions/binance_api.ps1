@@ -195,7 +195,7 @@ function Get-30dAthChangePct($Market) {
     return $change
 }
 
-function Get-30dLastPctChanges($Market, $Count) {
+function Get-30dPctChanges($Market, $Count) {
     $candles = Get-Ticker -Market $Market -Interval 1h -CandleLimit 720
     $allTimeHighCandle = Get-AthCandle -Candles $candles
 
