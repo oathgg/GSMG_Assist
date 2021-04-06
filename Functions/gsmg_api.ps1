@@ -91,7 +91,7 @@ function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPc
     }
 
     $body = ConvertTo-GSMGMessage -Hashset $hashSet
-    Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken
+    Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken | Out-Null
     Write-Host "Configured '$Market', with values '$body'"
 }
 
