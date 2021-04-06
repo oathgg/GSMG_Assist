@@ -1,4 +1,4 @@
-﻿cls
+﻿Clear-Host
 
 $curPath = $PSScriptRoot
 if (-not $curPath) {
