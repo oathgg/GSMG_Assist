@@ -18,7 +18,7 @@ $accountInformation = Query-Account
 $balances = $accountInformation.balances | Where-Object { [float]$_.Free -gt 0 -or [float]$_.Locked -gt 0 } | Sort-Object asset
 $pairs = @{}
 
-function Calculate-Balance($Balances) {
+function Get-Pairs($Balances) {
     $pairs = @{}
 
     foreach($balance in $balances) {
@@ -63,7 +63,7 @@ function Calculate-Balance($Balances) {
     return $pairs
 }
 
-$pairs += Calculate-Balance -Balances $balances
+$pairs += Get-Pairs -Balances $balances
 
 Get-BinanceTable -Pairs $Pairs
 

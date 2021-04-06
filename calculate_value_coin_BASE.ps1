@@ -1,4 +1,4 @@
-﻿cls
+﻿Clear-Host
 
 $curPath = $PSScriptRoot
 if (-not $curPath) {
@@ -18,7 +18,7 @@ $accountInformation = Query-Account
 $balances = $accountInformation.balances | Where-Object { [float]$_.Free -gt 0 -or [float]$_.Locked -gt 0 } | Sort-Object asset
 $pairs = @{}
 
-function Calculate-Balance($BaseMarket, $Balances) {
+function Get-Pairs($BaseMarket, $Balances) {
     $pairs = @{}
 
     if ($balances) {
@@ -62,7 +62,7 @@ function Calculate-Balance($BaseMarket, $Balances) {
     return $pairs
 }
 
-$pairs += Calculate-Balance -BaseMarket "USDT" -Balances $balances
-#$pairs += Calculate-Balance -BaseMarket "BUSD" -Balances $balances
+$pairs += Get-Pairs -BaseMarket "USDT" -Balances $balances
+#$pairs += Get-Pairs -BaseMarket "BUSD" -Balances $balances
 
 Get-BinanceTable -Pairs $Pairs

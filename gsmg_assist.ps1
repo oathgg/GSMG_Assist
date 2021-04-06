@@ -14,7 +14,7 @@ if (-not (Test-Path "$curPath\parameters.ps1")) {
 . "$curPath\Functions\Tools.ps1"
 
 while ($true) {
-    cls
+    Clear-Host
 
     $strategyPath = "$curPath\Strategies\$global:GSMGStrategy.ps1"
     if (-not (Test-Path $strategyPath)) {
@@ -24,5 +24,5 @@ while ($true) {
     }
 
     Write-Host "Sleeping for 60 seconds before running strategy again..."
-    Sleep -Seconds 60
+    Start-Sleep -Seconds 60
 }
