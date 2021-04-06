@@ -180,6 +180,11 @@ function Query-7dAthChangePct($Market) {
     return $change
 }
 
+function Query-14dAthChangePct($Market) {
+    $change = Query-AthChangePct -Market $Market -Interval 1h -CandleLimit 336
+    return $change
+}
+
 function Query-30dAthChangePct($Market) {
     $change = Query-AthChangePct -Market $Market -Interval 1h -CandleLimit 720
     return $change
