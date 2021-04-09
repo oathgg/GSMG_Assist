@@ -214,5 +214,8 @@ function Get-30dPctChanges($Market, $Count) {
         }
     }
 
-    return $pctChanges | Select-Object -First $Count
+    $pctChanges = $pctChanges | Select-Object -First $Count
+    [array]::Reverse($pctChanges)
+
+    return $pctChanges
 }
