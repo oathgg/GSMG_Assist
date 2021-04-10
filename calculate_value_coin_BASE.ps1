@@ -16,7 +16,6 @@ if (-not $curPath) {
 Write-Host "Querying Account information..."
 $accountInformation = Get-AccountInformation
 $balances = $accountInformation.balances | Where-Object { [float]$_.Free -gt 0 -or [float]$_.Locked -gt 0 } | Sort-Object asset
-$pairs = @{}
 
 function Get-Balance($BaseMarket, $Balances) {
     $pairs = @{}
@@ -40,21 +39,52 @@ function Get-Balance($BaseMarket, $Balances) {
 
             $timeago = (Get-Date).AddYears(-1)
             $Trades = Get-MyTrades -Symbol $market -From $timeago
+            #$Trades | Select-Object Symbol, Price, Qty, QuoteQty, isBuyer | Format-Table -AutoSize
+            $totalSoldCoins = 0
+            $totalSoldMoney = 0
+            $totalBoughtCoins = 0
+            $totalBoughtMoney = 0
+            $activeQty = 0 
+            $boughtCoins = 0
 
             foreach ($trade in $Trades) {
                 if ($trade.isBuyer) {
-                    $pairs["$market"]["Total"] += [float] $trade.quoteQty
-                    $pairs["$market"]["Amount"] += [float] $trade.qty - [float] $trade.commision
+                    $totalBoughtMoney += [float] $trade.quoteQty
+                    $totalBoughtCoins += [float] $trade.qty
+                    $boughtCoins += [float] $trade.qty
                 } else {
-                    $pairs["$market"]["Total"] -= [float] $trade.quoteQty
-                    $pairs["$market"]["Amount"] -= [float] $trade.qty - [float] $trade.commision
-
-                    # If the total is 0 it means we have probably taken out all our profits
-                    # Might be a moon bag, however, if the amount is less than 1 it means we left the coin completely
-                    if ($pairs["$market"]["Total"] -le 0 -and $pairs["$market"]["Amount"] -lt 1) {
-                        $pairs["$market"] = @{}
-                    }
+                    $totalSoldMoney += [float] $trade.quoteQty
+                    $totalSoldCoins += [float] $trade.qty
+                    $boughtCoins -= [float] $trade.qty
                 }
+
+                if ($totalBoughtMoney - $totalSoldMoney -le 1 -or $totalBoughtCoins - $totalSoldCoins -le 1) {
+                    $activeQty = 0
+                } 
+                elseif (-not $trade.isBuyer) {
+                    $activeQty = $boughtCoins
+                }
+                else {
+                    $activeQty += [float] $trade.qty
+                }
+            }
+
+            $pairs["$market"]["Total"] = $totalBoughtMoney - $totalSoldMoney
+            [int]$pairs["$market"]["ActiveAmount"] = $activeQty
+
+            if ($pairs["$market"]["Total"] -le 0) {
+                $pairs["$market"]["Total"] = 0
+                $pairs["$market"]["ActiveAmount"] = 0
+            }
+
+            if ($boughtCoins - $pairs["$market"]["Amount"] -gt 1) {
+                $pairs["$market"]["TotalAmount"] = $boughtCoins
+            } else {
+                $pairs["$market"]["TotalAmount"] = $pairs["$market"]["ActiveAmount"]
+            }
+
+            if ($pairs["$market"]["Total"] -gt 0) {
+                Write-Host "Spent a total of $($pairs["$market"]["Total"]) dollar, on $($pairs["$market"]["ActiveAmount"]) coins."
             }
         }
     }
@@ -62,7 +92,10 @@ function Get-Balance($BaseMarket, $Balances) {
     return $pairs
 }
 
-$pairs += Get-Balance -BaseMarket "USDT" -Balances $balances
+#$balances = $balances | ? { $_.asset -eq "STMX" }
+#$balances = $balances | ? { $_.asset -eq "XEM" }
+#$balances = $balances | ? { $_.asset -eq "VET" }
+$pairs = Get-Balance -BaseMarket "USDT" -Balances $balances
 #$pairs += Get-Balance -BaseMarket "BUSD" -Balances $balances
 
-Get-BinanceTable -Pairs $Pairs
+Get-BinanceTable -Pairs $pairs

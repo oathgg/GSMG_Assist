@@ -5,44 +5,42 @@
 
         Write-Host "Generating Binance table..."
         foreach ($market in $pairs.Keys | Sort-Object) {
-            $pair = $pairs[$market]
-            if ($pair.amount -gt 0) {
+            $pair = $pairs.$market
+            if ($pair.TotalAmount -gt 1 -or $pair.Amount -gt 1) {
                 $marketName = $Market
-                if ($marketName -notmatch "USDT"`
-                -and $marketName -notmatch "BUSD") {
+                if ($marketName -notmatch "USDT" -and $marketName -notmatch "BUSD") {
                     $marketName += "USDT" # Set a default market
                 }
-                $currentMarketPrice = (Get-MarketValue($marketName)).price
-                if ($null -eq $currentMarketPrice) {
-                    $currentMarketPrice = 1
-                }
+
+                $activeAmount = $pair.ActiveAmount
                 $total = $pair.Total
-                if ($total -lt 0) {
-                    $total = 0
-                }
-                $text = "$market`t$($pair.Amount)`t$($total)`t$($currentMarketPrice)"
+                $totalAmount = $pair.TotalAmount
+                $currentMarketPrice = (Get-MarketValue($marketName)).price
+
+                $text = "$market`t$($TotalAmount)`t$($activeAmount)`t$($Total)`t$($currentMarketPrice)"
                 if (-not [string]::IsNullOrEmpty($BinanceClipBoardText)) {
                     $BinanceClipBoardText += "`r`n"
                 }
                 $BinanceClipBoardText += $text
-                
-                $profit = [float] $currentMarketPrice * [float] $pair.Amount - [float] $total
 
-                if ($total -gt 0) {
+                if ($activeAmount -gt 0) {
+                    $profit = [float] $currentMarketPrice * [float] $ActiveAmount - [float] $total
                     $profitPercentage = $profit / ($total / 100)
                 } else {
+                    $profit = [float] $currentMarketPrice * [float] $totalAmount - [float] $total
                     $profitPercentage = $profit
                 }
 
                 $obj = New-Object psobject -Property @{ 
                     Market=$market; 
-                    Amount=$pair.Amount; 
+                    TotalAmount=$totalAmount; 
+                    ActiveAmount=$activeAmount; 
                     Total=$total; 
                     CurrentMarketPrice=$currentMarketPrice; 
                     Profit= [Math]::Round($profit, 2);
                     ProfitPercentage = $profitPercentage
                 }
-                $objList += $obj | Select-Object Market,Amount,Total,CurrentMarketPrice,Profit,ProfitPercentage
+                $objList += $obj | Select-Object Market,TotalAmount,ActiveAmount,Total,CurrentMarketPrice,Profit,ProfitPercentage
             }
         }
 
