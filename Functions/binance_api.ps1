@@ -190,32 +190,34 @@ function Get-14dAthChangePct($Market) {
     return $change
 }
 
-function Get-30dAthChangePct($Market) {
-    $change = Get-AthChangePct -Market $Market -Interval 1h -CandleLimit 720
+function Get-30dAthChangePct($Market, $Interval = "1h", $CandleLimit = "720") {
+    $change = Get-AthChangePct -Market $Market -Interval $Interval -CandleLimit $CandleLimit
     return $change
 }
 
-function Get-30dPctChanges($Market, $Count) {
-    $candles = Get-Ticker -Market $Market -Interval 1h -CandleLimit 720
-    $allTimeHighCandle = Get-AthCandle -Candles $candles
+function Get-PctChanges($Market, $Interval = "1h", $CandleLimit = "720") {
+    $candles = Get-Ticker -Market $Market -Interval $Interval -CandleLimit $CandleLimit
+    $allTimeHighCandleClose = (Get-AthCandle -Candles $candles)[1]
 
     $pctChanges = @()
     $previousChangePct = 0
 
-    # We count our percentages back from where we were 1 hour ago
+    # We count our percentages back from the previous candle
     # We dont want to use the one we're currently at because that is still being formed
     for ($i = $candles.Count - 2; $i -gt 0; $i--) {
         $curCandle = $candles[$i]
 
-        [int]$changePct = Get-ChangePct -FirstOpen $allTimeHighCandle[1] -LastClose $curCandle[4]
+        [int]$changePct = Get-ChangePct -FirstOpen $allTimeHighCandleClose -LastClose $curCandle[4]
         if ($changePct -ne $previousChangePct) {
             $pctChanges += $changePct
             $previousChangePct = $changePct
         }
     }
 
-    $pctChanges = $pctChanges | Select-Object -First $Count
     [array]::Reverse($pctChanges)
-
     return $pctChanges
+}
+
+function Get-30dPctChanges($Market) {
+    return Get-PctChanges -Market $Market -Interval 1h -CandleLimit 720
 }
