@@ -116,10 +116,37 @@ function Get-ChangePct($FirstOpen, $LastClose) {
 }
 
 function Get-Ticker($Market, $Interval, $CandleLimit) {
-    $res = Invoke-BinanceRestMethod -Query "/api/v3/klines?symbol=$Market&interval=$Interval&limit=$CandleLimit"
-    $candles = $res | ConvertFrom-Json -ErrorAction SilentlyContinue
+    $Candles = @()
+    for ($i = 0; $i -lt $CandleLimit; $i += 1000) {
+        $query = "/api/v3/klines?symbol=$Market&interval=$Interval&limit=1000"
 
-    return $candles
+        if ($Candles.Count -gt 0) {
+            $query += "&endTime=" + $Candles[0][0]
+        }
+
+        Write-Host $query
+        $candles = (Invoke-BinanceRestMethod -Query $Query | ConvertFrom-Json -ErrorAction SilentlyContinue) + $candles
+    }
+    
+    $candleObjects = @()
+    foreach ($c in $candles) {
+        $candleObjects += New-Object PSObject -Property @{
+            OpenTime = $c[0]
+            Open = $c[1]
+            High = $c[2]
+            Low = $c[3]
+            Close = $c[4]
+            Volume = $c[5]
+            CloseTime = $c[6]
+            QuoteAssetVolume = $c[7]
+            NumberOfTrades = $c[8]
+            TakerBuyBaseAssetVolume = $c[9]
+            TakerBuyQuoteAssetVolume = $c[10]
+            Ignore = $c[11]
+        }
+    }
+
+    return $candleObjects | Select-Object -Last $CandleLimit
 }
 
 function Get-TickerChangePct($Market, $Interval, $CandleLimit) {
@@ -127,7 +154,7 @@ function Get-TickerChangePct($Market, $Interval, $CandleLimit) {
 
     $first = $candles | Select-Object -First 1
     $last = $candles | Select-Object -Last 1
-    $change = Get-ChangePct -FirstOpen $First[1] -LastClose $Last[4]
+    $change = Get-ChangePct -FirstOpen $First.Open -LastClose $Last.Close
 
     return $change
 }
@@ -161,8 +188,8 @@ function Get-AthCandle($Candles) {
     $allTimeHighCandle = $candles | Select-Object -First 1
 
     foreach ($candle in $candles) {
-        $close = $candle[4]
-        if ($close -gt $allTimeHighCandle[4]) {
+        $close = $candle.Close
+        if ($close -gt $allTimeHighCandle.Close) {
             $allTimeHighCandle = $candle
         }
     }
@@ -172,11 +199,14 @@ function Get-AthCandle($Candles) {
 
 function Get-AthChangePct($Market, $Interval, $CandleLimit) {
     $candles = Get-Ticker -Market $Market -Interval $Interval -CandleLimit $CandleLimit
+    return Get-AthChangePctFromCandles($Candles)
+}
 
+function Get-AthChangePctFromCandles($Candles) {
     $allTimeHighCandle = Get-AthCandle -Candles $candles
     $current = $candles | Select-Object -Last 1
 
-    $change = Get-ChangePct -FirstOpen $allTimeHighCandle[1] -LastClose $current[4]
+    $change = Get-ChangePct -FirstOpen $allTimeHighCandle.Open -LastClose $current.Close
 
     return $change
 }
@@ -201,10 +231,10 @@ function Get-PreviousHigh($Market) {
     $athCandle = Get-AthCandle -Candles $candles
     $previousHighCandle = $candles | Select-Object -First 1
 
-    if ($athCandle[0] -ne $previousHighCandle[0] -and $previousHighCandle[4] -le $athCandle[4]) {
+    if ($athCandle.OpenTime -ne $previousHighCandle.OpenTime -and $previousHighCandle.Close -le $athCandle.Close) {
         foreach ($candle in $candles) {
-            $close = $candle[4]
-            if ($close -gt $athCandle[4]) {
+            $close = $candle.Close
+            if ($close -gt $athCandle.Close) {
                 $athCandle = $candle
             }
         }
@@ -215,13 +245,17 @@ function Get-PreviousHigh($Market) {
 
 function Get-ATH($Market, $Interval, $CandleLimit) {
     $candles = Get-Ticker -Market $Market -Interval $Interval -CandleLimit $CandleLimit
-    $allTimeHighCandleClose = (Get-AthCandle -Candles $candles)[1]
+    $allTimeHighCandleClose = (Get-AthCandle -Candles $candles).Open
     return $allTimeHighCandleClose
 }
 
 function Get-PctChanges($Market, $Interval = "1h", $CandleLimit = "720") {
     $candles = Get-Ticker -Market $Market -Interval $Interval -CandleLimit $CandleLimit
-    $allTimeHighCandleClose = (Get-AthCandle -Candles $candles)[1]
+    return Get-PctChangesFromCandles($Candles)
+}
+
+function Get-PctChangesFromCandles($Candles) {
+    $allTimeHighCandleClose = (Get-AthCandle -Candles $candles).Open
 
     $pctChanges = @()
     $previousChangePct = 0
@@ -231,7 +265,7 @@ function Get-PctChanges($Market, $Interval = "1h", $CandleLimit = "720") {
     for ($i = $candles.Count - 2; $i -gt 0; $i--) {
         $curCandle = $candles[$i]
 
-        [int]$changePct = Get-ChangePct -FirstOpen $allTimeHighCandleClose -LastClose $curCandle[4]
+        [int]$changePct = Get-ChangePct -FirstOpen $allTimeHighCandleClose -LastClose $curCandle.Close
         if ($changePct -ne $previousChangePct) {
             $pctChanges += $changePct
             $previousChangePct = $changePct
@@ -242,6 +276,6 @@ function Get-PctChanges($Market, $Interval = "1h", $CandleLimit = "720") {
     return $pctChanges
 }
 
-function Get-30dPctChanges($Market) {
-    return Get-PctChanges -Market $Market -Interval 1m -CandleLimit 43200
+function Get-30dPctChanges($Market, $Interval = "15m", $CandleLimit = "2880") {
+    return Get-PctChanges -Market $Market -Interval $Interval -CandleLimit $CandleLimit
 }
