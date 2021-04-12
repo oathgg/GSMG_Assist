@@ -124,7 +124,6 @@ function Get-Ticker($Market, $Interval, $CandleLimit) {
             $query += "&endTime=" + $Candles[0][0]
         }
 
-        Write-Host $query
         $candles = (Invoke-BinanceRestMethod -Query $Query | ConvertFrom-Json -ErrorAction SilentlyContinue) + $candles
     }
     
@@ -276,6 +275,6 @@ function Get-PctChangesFromCandles($Candles) {
     return $pctChanges
 }
 
-function Get-30dPctChanges($Market, $Interval = "15m", $CandleLimit = "2880") {
+function Get-30dPctChanges($Market, $Interval = "1m", $CandleLimit = "43200") {
     return Get-PctChanges -Market $Market -Interval $Interval -CandleLimit $CandleLimit
 }
