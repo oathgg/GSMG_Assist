@@ -46,6 +46,7 @@ function Get-Balance($BaseMarket, $Balances) {
             $totalBoughtMoney = 0
             $activeQty = 0 
             $boughtCoins = 0
+            $i = 0
 
             foreach ($trade in $Trades) {
                 if ($trade.isBuyer) {
@@ -63,6 +64,11 @@ function Get-Balance($BaseMarket, $Balances) {
                 } 
                 elseif (-not $trade.isBuyer) {
                     $activeQty = $boughtCoins
+                    if ($totalBoughtMoney - $totalSoldMoney -le 1) {
+                        $pairs["$market"]["Total"]
+                        $totalBoughtMoney = 0
+                        $totalSoldMoney = 0
+                    }
                 }
                 else {
                     $activeQty += [float] $trade.qty
@@ -84,7 +90,7 @@ function Get-Balance($BaseMarket, $Balances) {
             }
 
             if ($pairs["$market"]["Total"] -gt 0) {
-                Write-Host "Spent a total of $($pairs["$market"]["Total"]) dollar, on $($pairs["$market"]["ActiveAmount"]) coins."
+                #Write-Host "Spent a total of $($pairs["$market"]["Total"]) dollar, on $($pairs["$market"]["ActiveAmount"]) coins."
             }
         }
     }

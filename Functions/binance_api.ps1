@@ -159,6 +159,7 @@ function Get-1wTicker($Market) {
 
 function Get-AthCandle($Candles) {
     $allTimeHighCandle = $candles | Select-Object -First 1
+
     foreach ($candle in $candles) {
         $close = $candle[4]
         if ($close -gt $allTimeHighCandle[4]) {
@@ -195,6 +196,23 @@ function Get-30dAthChangePct($Market, $Interval = "1h", $CandleLimit = "720") {
     return $change
 }
 
+function Get-PreviousHigh($Market) {
+    $candles = Get-Ticker -Market $Market -Interval 1m -CandleLimit 1440
+    $athCandle = Get-AthCandle -Candles $candles
+    $previousHighCandle = $candles | Select-Object -First 1
+
+    if ($athCandle[0] -ne $previousHighCandle[0] -and $previousHighCandle[4] -le $athCandle[4]) {
+        foreach ($candle in $candles) {
+            $close = $candle[4]
+            if ($close -gt $athCandle[4]) {
+                $athCandle = $candle
+            }
+        }
+    }
+
+    return $athCandle
+}
+
 function Get-ATH($Market, $Interval, $CandleLimit) {
     $candles = Get-Ticker -Market $Market -Interval $Interval -CandleLimit $CandleLimit
     $allTimeHighCandleClose = (Get-AthCandle -Candles $candles)[1]
@@ -225,5 +243,5 @@ function Get-PctChanges($Market, $Interval = "1h", $CandleLimit = "720") {
 }
 
 function Get-30dPctChanges($Market) {
-    return Get-PctChanges -Market $Market -Interval 1h -CandleLimit 720
+    return Get-PctChanges -Market $Market -Interval 1m -CandleLimit 43200
 }
