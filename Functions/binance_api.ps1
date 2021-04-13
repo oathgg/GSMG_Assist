@@ -130,17 +130,17 @@ function Get-Ticker($Market, $Interval, $CandleLimit) {
     $candleObjects = @()
     foreach ($c in $candles) {
         $candleObjects += New-Object PSObject -Property @{
-            OpenTime = $c[0]
-            Open = $c[1]
-            High = $c[2]
-            Low = $c[3]
-            Close = $c[4]
-            Volume = $c[5]
-            CloseTime = $c[6]
-            QuoteAssetVolume = $c[7]
-            NumberOfTrades = $c[8]
-            TakerBuyBaseAssetVolume = $c[9]
-            TakerBuyQuoteAssetVolume = $c[10]
+            OpenTime = [Int64] $c[0]
+            Open = [Float] $c[1]
+            High = [Float] $c[2]
+            Low = [Float] $c[3]
+            Close = [Float] $c[4]
+            Volume = [Float] $c[5]
+            CloseTime = [Int64] $c[6]
+            QuoteAssetVolume = [Float] $c[7]
+            NumberOfTrades = [Int64] $c[8]
+            TakerBuyBaseAssetVolume = [Float] $c[9]
+            TakerBuyQuoteAssetVolume = [Float] $c[10]
             Ignore = $c[11]
         }
     }
