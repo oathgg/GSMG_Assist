@@ -230,12 +230,14 @@ function Get-PreviousHighFromCandles($Candles, $AllowedDistancePct = 1.02) {
 
     for ($i = $Candles.Count; $i -gt 0; $i--) {
         $candle = $candles[$i]
-        if ($candle.Close -gt $previousHighCandle.Close) {
+        $candleHighLow = ($candle.High + $candle.Low) / 2
+        $prevCandleHighLow = ($previousHighCandle.High + $previousHighCandle.Low) / 2
+        if ($candleHighLow -gt $prevCandleHighLow) {
             $previousHighCandle = $candle
         } else {
             # if the distance between our previous high and value we have right now is greater than 2% then we have most likely found our previous high
-            $distancePct = $previousHighCandle.Close / $AllowedDistancePct
-            if ($distancePct -gt $candle.Close) {
+            $distancePct = $prevCandleHighLow / $AllowedDistancePct
+            if ($distancePct -gt $candleHighLow) {
                 break;
             }
         }
