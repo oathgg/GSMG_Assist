@@ -110,9 +110,10 @@ function Get-MarketValue($Market) {
 
 #>
 
-function Get-ChangePct($FirstOpen, $LastClose) {
-    $change = ($LastClose - $FirstOpen) * 100 / $FirstOpen;
-    return $change
+function Get-ChangePct($Last, $Ath) {
+    #$change = ($LastClose - $FirstOpen) * 100 / $FirstOpen;
+    $changePct = ($last.Close - $Ath.High) * 100 / $Ath.Open
+    return $changePct
 }
 
 function Get-Ticker($Market, $Interval, $CandleLimit) {
@@ -203,11 +204,11 @@ function Get-AthChangePct($Market, $Interval, $CandleLimit) {
 
 function Get-AthChangePctFromCandles($Candles) {
     $allTimeHighCandle = Get-AthCandle -Candles $candles
-    $current = $candles | Select-Object -Last 1
+    $last = $candles | Select-Object -Last 1
 
-    $change = Get-ChangePct -FirstOpen $allTimeHighCandle.Open -LastClose $current.Close
+    $changePct = Get-ChangePct -Last $last -Ath $allTimeHighCandle
 
-    return $change
+    return $changePct
 }
 
 function Get-7dAthChangePct($Market) {
@@ -258,17 +259,17 @@ function Get-PctChanges($Market, $Interval = "1h", $CandleLimit = "720") {
 }
 
 function Get-PctChangesFromCandles($Candles) {
-    $allTimeHighCandleClose = (Get-AthCandle -Candles $candles).Open
+    $allTimeHighCandle = Get-AthCandle -Candles $candles
 
     $pctChanges = @()
     $previousChangePct = 0
 
     # We count our percentages back from the previous candle
     # We dont want to use the one we're currently at because that is still being formed
-    for ($i = $candles.Count - 2; $i -gt 0; $i--) {
+    for ($i = $candles.Count - 1; $i -gt 0; $i--) {
         $curCandle = $candles[$i]
 
-        [int]$changePct = Get-ChangePct -FirstOpen $allTimeHighCandleClose -LastClose $curCandle.Close
+        [int]$changePct = Get-ChangePct -Last $curCandle -Ath $allTimeHighCandle
         if ($changePct -ne $previousChangePct) {
             $pctChanges += $changePct
             $previousChangePct = $changePct
