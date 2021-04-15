@@ -225,21 +225,23 @@ function Get-30dAthChangePct($Market, $Interval = "1h", $CandleLimit = "720") {
     return $change
 }
 
-function Get-PreviousHigh($Market) {
-    $candles = Get-Ticker -Market $Market -Interval 1m -CandleLimit 1440
-    $athCandle = Get-AthCandle -Candles $candles
-    $previousHighCandle = $candles | Select-Object -First 1
+function Get-PreviousHighFromCandles($Candles, $AllowedDistancePct = 1.02) {
+    $previousHighCandle = $candles | Select-Object -Last 1
 
-    if ($athCandle.OpenTime -ne $previousHighCandle.OpenTime -and $previousHighCandle.Close -le $athCandle.Close) {
-        foreach ($candle in $candles) {
-            $close = $candle.Close
-            if ($close -gt $athCandle.Close) {
-                $athCandle = $candle
+    for ($i = $Candles.Count; $i -gt 0; $i--) {
+        $candle = $candles[$i]
+        if ($candle.Close -gt $previousHighCandle.Close) {
+            $previousHighCandle = $candle
+        } else {
+            # if the distance between our previous high and value we have right now is greater than 2% then we have most likely found our previous high
+            $distancePct = $previousHighCandle.Close / $AllowedDistancePct
+            if ($distancePct -gt $candle.Close) {
+                break;
             }
         }
     }
 
-    return $athCandle
+    return $previousHighCandle
 }
 
 function Get-ATH($Market, $Interval, $CandleLimit) {
