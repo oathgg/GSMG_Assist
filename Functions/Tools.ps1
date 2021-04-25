@@ -13,7 +13,7 @@
                 }
 
                 $activeAmount = $pair.ActiveAmount
-                $total = $pair.Total
+                $total = $pair.Spent
                 $totalAmount = $pair.TotalAmount
                 $currentMarketPrice = (Get-MarketValue($marketName)).price
 
@@ -35,12 +35,12 @@
                     Market=$market; 
                     TotalAmount=$totalAmount; 
                     ActiveAmount=$activeAmount; 
-                    Total=$total; 
+                    Spent=$total; 
                     CurrentMarketPrice=$currentMarketPrice; 
                     Profit= [Math]::Round($profit, 2);
                     ProfitPercentage = $profitPercentage
                 }
-                $objList += $obj | Select-Object Market,TotalAmount,ActiveAmount,Total,CurrentMarketPrice,Profit,ProfitPercentage
+                $objList += $obj | Select-Object Market,TotalAmount,ActiveAmount,Spent,CurrentMarketPrice,Profit,ProfitPercentage
             }
         }
 
