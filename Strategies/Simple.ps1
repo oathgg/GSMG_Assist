@@ -13,11 +13,14 @@ foreach ($market in $markets) {
         } else {
             $bemPct = "0"
         }
-        $aggressivenessPct = "30"
+        $aggressivenessPct = "20"
     } 
-    elseif ($pctChangeFromATH -le -25) {
+    elseif ($pctChangeFromATH -le -35) {
         $bemPct = "0"
         $aggressivenessPct = "20"
+    }
+    elseif ($pctChangeFromATH -le -25) {
+        $bemPct = "0"
     } 
 
     #Write-Host "[$Marketname] $pctChangeFromAth, $bemPct, $aggressivenessPct"
