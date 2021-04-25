@@ -8,7 +8,7 @@ foreach ($market in $markets) {
     $aggressivenessPct = "10"
 
     if ($pctChangeFromATH -le -45 -and $bagPct -lt 60) {
-        $aggressivenessPct = "20"
+        #$aggressivenessPct = "20"
         $bemPct = "2"
     } 
     elseif ($pctChangeFromATH -le -35) {
