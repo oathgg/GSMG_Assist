@@ -11,10 +11,10 @@ foreach ($market in $markets) {
         #$aggressivenessPct = "20"
         $bemPct = "2"
     } 
-    elseif ($pctChangeFromATH -le -30) {
+    elseif ($pctChangeFromATH -le -35) {
         $bemPct = "0"
     }
-    elseif ($pctChangeFromATH -le -20) {
+    elseif ($pctChangeFromATH -le -25) {
         $bemPct = "-5"
     } 
 
