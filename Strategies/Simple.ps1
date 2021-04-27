@@ -18,7 +18,7 @@ foreach ($market in $markets) {
             $bemPct = "0"
         } 
         elseif ($pctChangeFromATH -le -10) {
-            $bemPct = "-3"
+            $bemPct = "-5"
         }
     }
 
