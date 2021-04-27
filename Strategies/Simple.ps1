@@ -14,9 +14,12 @@ foreach ($market in $markets) {
         if ($pctChangeFromATH -le -25 -and $bagPct -lt 60) {
             $bemPct = "2"
         }
-        elseif ($pctChangeFromATH -le -15) {
+        elseif ($pctChangeFromATH -le -20) {
             $bemPct = "0"
         } 
+        elseif ($pctChangeFromATH -le -10) {
+            $bemPct = "-3"
+        }
     }
 
     #Write-Host "[$Marketname] $pctChangeFromAth, $bemPct, $aggressivenessPct"
