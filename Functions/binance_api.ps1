@@ -112,7 +112,7 @@ function Get-MarketValue($Market) {
 
 function Get-ChangePct($Last, $Ath) {
     #$change = ($LastClose - $FirstOpen) * 100 / $FirstOpen;
-    $changePct = ($last.Close - $Ath.High) * 100 / $Ath.Open
+    $changePct = ($last.High - $Ath.High) * 100 / $Ath.Open
     return $changePct
 }
 

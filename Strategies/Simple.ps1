@@ -9,7 +9,7 @@ foreach ($market in $markets) {
     $aggressivenessPct = "10"
 
     # Market is reversing after a downtrend??
-    if ($pctChange24h -gt -5)
+    if ($pctChange24h -gt -10)
     {
         if ($pctChangeFromATH -le -35 -and $bagPct -lt 60) {
             $bemPct = "2"
