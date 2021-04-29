@@ -15,11 +15,11 @@ foreach ($market in $markets) {
     if ($pctChange24h -gt -10)
     {
         if ($pctChangeFromATH -le -30) {
-            $bemPct = "4"
+            $bemPct = "2"
             $shouldAllocate = $true
         }
         elseif ($pctChangeFromATH -le -20) {
-            $bemPct = "2"
+            $bemPct = "0"
             $shouldAllocate = $true
         } 
     }
