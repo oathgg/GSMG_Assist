@@ -100,5 +100,11 @@ function Get-GSMGMarkets() {
     $uri = "$script:baseUri/api/v1/markets/allocations"
     $res = Invoke-GSMGRequest -Uri $Uri -Method Get -RequiresToken
 
-    return $res.merged | Where-Object { $_.set_alloc_perc -gt 0 }
+    return $res.merged
+}
+
+function Set-GMSGMarketAllocation($Market, $AllocationPct) {
+    $uri = "$script:baseUri/api/v1/markets/Binance:$Market/percent/$AllocationPct"
+    $res = Invoke-GSMGRequest -Uri $Uri -Method Put -RequiresToken
+    Write-Host "[$Market] -> Allocation: $AllocationPct"
 }

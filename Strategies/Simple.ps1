@@ -1,4 +1,6 @@
 ﻿$markets = Get-GSMGMarkets
+$Settings = @{}
+
 foreach ($market in $markets) {
     $marketName = $market.market_name.Replace("Binance:", "")
     [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1d" -CandleLimit 1000
@@ -7,21 +9,40 @@ foreach ($market in $markets) {
 
     $bemPct = "-15"
     $aggressivenessPct = "10"
+    $shouldAllocate = $false
 
     # Market is reversing after a downtrend??
     if ($pctChange24h -gt -10)
     {
-        if ($pctChangeFromATH -le -35 -and $bagPct -lt 60) {
-            $bemPct = "2"
+        if ($pctChangeFromATH -le -30) {
+            $bemPct = "4"
+            $shouldAllocate = $true
         }
         elseif ($pctChangeFromATH -le -20) {
-            $bemPct = "0"
+            $bemPct = "2"
+            $shouldAllocate = $true
         } 
-        elseif ($pctChangeFromATH -le -10) {
-            $bemPct = "-5"
-        }
     }
 
-    #Write-Host "[$Marketname] $pctChangeFromAth, $bemPct, $aggressivenessPct"
-    Set-GSMGSetting -Market $marketName -BemPct $bemPct -AggressivenessPct $aggressivenessPct
+    $Settings += @{$marketName = @($bemPct, $aggressivenessPct, $shouldAllocate)}
+}
+
+$allocationCount = 0
+foreach ($setting in $settings.GetEnumerator()) {
+    if ($Setting.Value[2]) {
+        $allocationCount++
+    }
+}
+
+foreach ($setting in $settings.GetEnumerator()) {
+    if ($Setting.Value[2]) {
+        # Set allocation = 100 / $allocationCount
+        $allocPct = [Math]::Floor(100 / $allocationCount)
+    } else {
+        # Set allocation = 0
+        $allocPct = 0
+    }
+
+    Set-GMSGMarketAllocation -Market $Setting.Key -AllocationPct $allocPct
+    Set-GSMGSetting -Market $Setting.Key -BemPct $Setting.Value[0] -AggressivenessPct $Setting.Value[1]
 }
