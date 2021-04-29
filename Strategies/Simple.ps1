@@ -14,7 +14,7 @@ foreach ($market in $markets) {
     # Market is reversing after a downtrend??
     if ($pctChange24h -gt -10)
     {
-        if ($pctChangeFromATH -le -30) {
+        if ($pctChangeFromATH -le -40) {
             $bemPct = "2"
             $shouldAllocate = $true
         }
