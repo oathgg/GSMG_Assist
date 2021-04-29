@@ -96,11 +96,18 @@ function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPc
 }
 
 #GET /api/v1/markets/allocations HTTP/1.1
-function Get-GSMGMarkets() {
+function Get-GSMGMarketAllocations() {
     $uri = "$script:baseUri/api/v1/markets/allocations"
     $res = Invoke-GSMGRequest -Uri $Uri -Method Get -RequiresToken
 
     return $res.merged
+}
+
+function Get-GSMGMarkets() {
+    $uri = "$script:baseUri/api/v1/markets"
+    $res = Invoke-GSMGRequest -Uri $Uri -Method Get -RequiresToken
+
+    return $res.markets | Where-Object { $_.enabled -eq $true }
 }
 
 function Set-GMSGMarketAllocation($Market, $AllocationPct) {
