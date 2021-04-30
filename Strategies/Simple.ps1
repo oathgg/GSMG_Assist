@@ -3,7 +3,7 @@ $Settings = @{}
 
 foreach ($market in $markets) {
     $marketName = $market.name.Replace("Binance:", "")
-    [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1d" -CandleLimit 1000
+    [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1d" -CandleLimit 1000 -IncludeCurrentCandle
     [float] $pctChange24h = (Get-24hTicker($marketName)).priceChangePercent
     $bagPct = [float] $market.vol_sells_worth / ([float] $market.managed_value_usd / 100)
 
@@ -14,12 +14,8 @@ foreach ($market in $markets) {
     # Market is reversing after a downtrend??
     if ($pctChange24h -gt -10)
     {
-        if ($pctChangeFromATH -le -40) {
-            if ($bagPct -lt 60) {
-                $bemPct = "2"
-            } else {
-                $bemPct = "0";
-            }
+        if ($pctChangeFromATH -le -40 -and $bagPct -lt 60) {
+            $bemPct = "2"
             $shouldAllocate = $true
         }
         elseif ($pctChangeFromATH -le -20) {

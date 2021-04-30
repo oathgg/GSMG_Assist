@@ -112,7 +112,7 @@ function Get-MarketValue($Market) {
 
 function Get-ChangePct($Last, $Ath) {
     #$change = ($LastClose - $FirstOpen) * 100 / $FirstOpen;
-    $changePct = ($last.High - $Ath.High) * 100 / $Ath.Open
+    $changePct = ($last.Close - $Ath.Close) * 100 / $Ath.Close
     return $changePct
 }
 
@@ -197,8 +197,13 @@ function Get-AthCandle($Candles) {
     return $allTimeHighCandle
 }
 
-function Get-AthChangePct($Market, $Interval, $CandleLimit) {
+function Get-AthChangePct($Market, $Interval, $CandleLimit, [switch]$IncludeCurrentCandle) {
     $candles = Get-Ticker -Market $Market -Interval $Interval -CandleLimit $CandleLimit
+    if ($IncludeCurrentCandle) {
+        $curCandle = Get-Ticker -Market $Market -Interval "1m" -CandleLimit "1"
+        $candles += $curCandle
+    }
+
     return Get-AthChangePctFromCandles($Candles)
 }
 
