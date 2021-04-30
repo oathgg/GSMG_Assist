@@ -46,6 +46,10 @@ foreach ($setting in $settings.GetEnumerator()) {
         $allocPct = 0
     }
 
+    if ($allocPct -gt $global:MaxAllocationPct) {
+        $allocPct = $global:MaxAllocationPct
+    }
+
     # Reduce spam by checking if we're actually changing anything to what the server has
     if ($curMarket.allocation -ne $allocPct) {
         Set-GMSGMarketAllocation -Market $Setting.Key -AllocationPct $allocPct
