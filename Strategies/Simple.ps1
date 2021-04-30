@@ -35,14 +35,23 @@ foreach ($setting in $settings.GetEnumerator()) {
 }
 
 foreach ($setting in $settings.GetEnumerator()) {
-    if ($Setting.Value[2]) {
-        # Set allocation = 100 / $allocationCount
+    $curMarket = $markets | Where-Object {$_.market_name -eq $setting.key}
+    $newBem = $Setting.Value[0]
+    $newAgg = $Setting.Value[1]
+    $shouldAlloc = $Setting.Value[2]
+   
+    if ($shouldAlloc) {
         $allocPct = [Math]::Floor(100 / $allocationCount)
     } else {
-        # Set allocation = 0
         $allocPct = 0
     }
 
-    Set-GMSGMarketAllocation -Market $Setting.Key -AllocationPct $allocPct
-    Set-GSMGSetting -Market $Setting.Key -BemPct $Setting.Value[0] -AggressivenessPct $Setting.Value[1]
+    # Reduce spam by checking if we're actually changing anything to what the server has
+    if ($curMarket.allocation -ne $allocPct) {
+        Set-GMSGMarketAllocation -Market $Setting.Key -AllocationPct $allocPct
+    }
+
+    if ($curMarket.bem_pct -ne $newBem -or $curMarket.aggressiveness_pct -ne $newAgg) {
+        Set-GSMGSetting -Market $Setting.Key -BemPct $Setting.Value[0] -AggressivenessPct $Setting.Value[1]
+    }
 }
