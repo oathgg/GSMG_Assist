@@ -23,10 +23,12 @@ foreach ($market in $markets) {
             $shouldAllocate = $true
         } 
         # This works in a bull market, if we're not in a bull market then we should disable this elseif statement
+        <#
         elseif ($pctChangeFromATH -le -10) {
             $bemPct = "0"
             $shouldAllocate = $true
         } 
+        #>
     }
 
     $Settings += @{$marketName = @($bemPct, $aggressivenessPct, $shouldAllocate, $market.base_currency)}
