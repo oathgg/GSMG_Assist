@@ -64,7 +64,7 @@ foreach ($setting in $marketsToDisable) {
     $allocationActive = $GSMGAllocations | ? { $_.market_name -match $marketName }
 
     # The amount of money we still have open in the coin
-    if ($allocationActive -and $allocationActive.managed_value_usd -lt 1) {
+    if (-not $allocationActive -or ($allocationActive -and $allocationActive.managed_value_usd -lt 1)) {
         Set-GMSGMarketStatus -Market $marketName -Enabled $False
     }
 
