@@ -1,4 +1,5 @@
 ﻿$GSMGmarkets = Get-GSMGMarkets
+$GSMGAllocations = Get-GSMGMarketAllocations
 $Settings = @{}
 
 foreach ($market in $global:MarketsToScan) {
@@ -59,13 +60,14 @@ foreach ($setting in $settings.GetEnumerator()) {
 $marketsToDisable = $settings.Values | Where-Object { -not $_[2] }
 foreach ($setting in $marketsToDisable) {
     $marketName = $setting[4]
-    $curMarket = $GSMGmarkets | Where-Object {$_.market_name -eq $marketName}
+    $curMarket = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
+    $allocationActive = $GSMGAllocations | ? { $_.market_name -match $marketName }
 
-    if ($curMarket.quantity_reserved -lt 1) {
+    if ($allocationActive -and $curMarket.quantity_reserved -lt 1) {
         Set-GMSGMarketStatus -Market $marketName -Enabled $False
     }
 
-    if ($curMarket.allocation -ne 0) {
+    if ($curMarket.allocation -ne $null -and $curMarket.allocation -ne 0) {
         Set-GMSGMarketAllocation -Market $marketName -AllocationPct 0
     }
 }
@@ -78,18 +80,13 @@ foreach ($setting in $marketsToEnable) {
     $newAgg = $Setting[1]
     $shouldAlloc = $Setting[2]
     $baseCurrency = $curMarket.base_currency
+    $allocationActive = $GSMGAllocations | ? { $_.market_name -match $marketName }
    
     if ($shouldAlloc) {
         $allocPct = [Math]::Floor(100 / $allocationCount[$baseCurrency])
     } else {
         $allocPct = 0
     }
-
-    <#
-    if ($allocPct -gt $global:MaxAllocationPct -and $baseCurrency -eq "BUSD") {
-        $allocPct = $global:MaxAllocationPct
-    }
-    #>
 
     # Reduce spam by checking if we're actually changing anything to what the server has
     if ($curMarket.allocation -ne $allocPct) {
@@ -100,7 +97,7 @@ foreach ($setting in $marketsToEnable) {
         Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg
     }
 
-    if ($shouldAlloc) {
+    if ($shouldAlloc -and -not $allocationActive) {
         Set-GMSGMarketStatus -Market $marketName -Enable $True
     } 
 }
