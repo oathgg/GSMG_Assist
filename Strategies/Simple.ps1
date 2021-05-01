@@ -25,7 +25,7 @@ foreach ($market in $global:MarketsToScan) {
             $shouldAllocate = $true
         }
         elseif ($pctChangeFromATH -le -20) {
-            if ($bagPct -lt 40) {
+            if ($bagPct -lt 30) {
                 $bemPct = "2"
             }
             else {
