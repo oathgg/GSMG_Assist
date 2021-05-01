@@ -63,10 +63,13 @@ foreach ($setting in $marketsToDisable) {
     $curMarket = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
     $allocationActive = $GSMGAllocations | ? { $_.market_name -match $marketName }
 
-    if ($allocationActive -and $curMarket.quantity_reserved -lt 1) {
+    # The amount of money we still have open in the coin
+    if ($allocationActive -and $allocationActive.managed_value_usd -lt 1) {
         Set-GMSGMarketStatus -Market $marketName -Enabled $False
     }
 
+    # Make sure we dont have any allocation left when we disable the market
+    # We set it to 0 in case we do have some of our bag left, this way we "leave" the market but sell orders remain open.
     if ($curMarket.allocation -ne $null -and $curMarket.allocation -ne 0) {
         Set-GMSGMarketAllocation -Market $marketName -AllocationPct 0
     }
@@ -86,6 +89,10 @@ foreach ($setting in $marketsToEnable) {
         $allocPct = [Math]::Floor(100 / $allocationCount[$baseCurrency])
     } else {
         $allocPct = 0
+    }
+
+    if ($allocPct -gt $global:MaxAllocationPct[$baseCurrency]) {
+        $allocPct = $global:MaxAllocationPct[$baseCurrency]
     }
 
     # Reduce spam by checking if we're actually changing anything to what the server has

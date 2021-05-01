@@ -12,7 +12,10 @@ $global:GSMGEmail = "xxxx@gmail.com"
 $global:GSMGPassword = "xxxxx"
 $global:GSMGStrategy = "xxxxx" #File should be located in the "Strategies" folder. The name of the file is enough, u dont have to add the extension.
 
-$global:MaxAllocationPct = 20
+$global:MaxAllocationPct = @{
+    "BUSD"=20;
+    "BTC"=100
+}
 $global:MarketsToScan = @(
     #BUSD
     "BNBBUSD", 
