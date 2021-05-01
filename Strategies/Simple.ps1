@@ -107,6 +107,10 @@ foreach ($setting in $marketsToEnable) {
         $allocPct = $global:MaxAllocationPct[$baseCurrency]
     }
 
+    if ($shouldAlloc -and -not $allocationActive) {
+        Set-GMSGMarketStatus -Market $marketName -Enable $True
+    }
+
     # Reduce spam by checking if we're actually changing anything to what the server has
     if ($curMarket.allocation -ne $allocPct) {
         Set-GMSGMarketAllocation -Market $marketName -AllocationPct $allocPct
@@ -115,8 +119,4 @@ foreach ($setting in $marketsToEnable) {
     if ($curMarket.bem_pct -ne $newBem -or $curMarket.aggressiveness_pct -ne $newAgg -or $curMarket.min_trade_profit_pct -ne $global:MinProfitPct) {
         Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $global:MinProfitPct
     }
-
-    if ($shouldAlloc -and -not $allocationActive) {
-        Set-GMSGMarketStatus -Market $marketName -Enable $True
-    } 
 }
