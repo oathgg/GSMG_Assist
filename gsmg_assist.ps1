@@ -1,4 +1,12 @@
-﻿$curPath = $PSScriptRoot
+﻿function Get-Latest($Path) {
+    pushd
+    cd $Path
+    #git stash
+    git pull
+    popd
+}
+
+$curPath = $PSScriptRoot
 if (-not $curPath) {
     $curPath = $psise.CurrentFile.FullPath
 }
@@ -13,9 +21,12 @@ if (-not (Test-Path "$curPath\parameters.ps1")) {
 . "$curPath\Functions\Tools.ps1"
 
 while ($true) {
-    Clear-Host
-    . "$curPath\parameters.ps1"
+    Get-Latest -Path $curPath
 
+    Clear-Host
+
+    . "$curPath\parameters.ps1"
+    
     $strategyPath = "$curPath\Strategies\$global:GSMGStrategy.ps1"
     if (-not (Test-Path $strategyPath)) {
         Write-Warning "Could not find strategy with filename '$strategyPath'."

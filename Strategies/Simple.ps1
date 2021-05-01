@@ -23,7 +23,7 @@ foreach ($market in $markets) {
             $shouldAllocate = $true
         } 
         elseif ($pctChangeFromATH -le -10) {
-            $bemPct = "-2"
+            $bemPct = "-3"
             $shouldAllocate = $true
         } 
     }
@@ -60,6 +60,6 @@ foreach ($setting in $settings.GetEnumerator()) {
     }
 
     if ($curMarket.bem_pct -ne $newBem -or $curMarket.aggressiveness_pct -ne $newAgg) {
-        Set-GSMGSetting -Market $Setting.Key -BemPct $Setting.Value[0] -AggressivenessPct $Setting.Value[1]
+        Set-GSMGSetting -Market $Setting.Key -BemPct $newBem -AggressivenessPct $newBem
     }
 }
