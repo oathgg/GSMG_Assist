@@ -97,7 +97,7 @@ function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPc
 
     $body = ConvertTo-GSMGMessage -Hashset $hashSet
     Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken | Out-Null
-    Write-Host "[$Market] -> $body"
+    #Write-Host "[$Market] -> $body"
 }
 
 #GET /api/v1/markets/allocations HTTP/1.1
@@ -118,7 +118,7 @@ function Get-GSMGMarkets() {
 function Set-GMSGMarketAllocation($Market, $AllocationPct) {
     $uri = "$script:baseUri/api/v1/markets/Binance:$Market/percent/$AllocationPct"
     $res = Invoke-GSMGRequest -Uri $Uri -Method Put -RequiresToken
-    Write-Host "[$Market] -> Allocation: $AllocationPct"
+    #Write-Host "[$Market] -> Allocation: $AllocationPct"
 }
 
 function Set-GMSGMarketStatus($Market, $Enabled) {
@@ -127,5 +127,5 @@ function Set-GMSGMarketStatus($Market, $Enabled) {
     $body = ConvertTo-GSMGMessage -Hashset @{"enabled"=$Enabled}
 
     $res = Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken
-    Write-Host "[$Market] -> Enabled: $Enabled"
+    #Write-Host "[$Market] -> Enabled: $Enabled"
 }

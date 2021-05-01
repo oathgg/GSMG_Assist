@@ -2,7 +2,8 @@
 $GSMGAllocations = Get-GSMGMarketAllocations
 $Settings = @{}
 
-foreach ($marketName in $global:MarketsToScan) {
+foreach ($market in $global:MarketsToScan) {
+    $marketName = $market
     [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1d" -CandleLimit 50 -IncludeCurrentCandle
     [float] $pctChange24h = (Get-24hTicker($marketName)).priceChangePercent
     $market = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
@@ -42,6 +43,9 @@ foreach ($marketName in $global:MarketsToScan) {
         #>
     }
 
+    if ($shouldAllocate) {
+        Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct"
+    }
     $Settings += @{$marketName = @($bemPct, $aggressivenessPct, $shouldAllocate, $market.base_currency, $marketName)}
 }
 
