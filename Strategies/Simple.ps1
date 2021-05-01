@@ -1,4 +1,4 @@
-﻿$markets = Get-GSMGMarkets | Where-Object { $_.base_currency -eq "BUSD" }
+﻿$markets = Get-GSMGMarkets
 $Settings = @{}
 
 foreach ($market in $markets) {
@@ -29,13 +29,23 @@ foreach ($market in $markets) {
         } 
     }
 
-    $Settings += @{$marketName = @($bemPct, $aggressivenessPct, $shouldAllocate)}
+    $Settings += @{$marketName = @($bemPct, $aggressivenessPct, $shouldAllocate, $market.base_currency)}
 }
 
-$allocationCount = 0
+# { BUSD = 8,
+#   BTC = 1
+# }
+$allocationCount = @{}
 foreach ($setting in $settings.GetEnumerator()) {
-    if ($Setting.Value[2]) {
-        $allocationCount++
+    $shouldAllocate = $Setting.Value[2];
+    $baseCurrency = $Setting.Value[3];
+
+    if (-not $allocationCount.ContainsKey($baseCurrency)) {
+        $allocationCount.Add($baseCurrency, 0);
+    }
+
+    if ($shouldAllocate) {
+        $allocationCount[$baseCurrency]++;
     }
 }
 
@@ -44,14 +54,15 @@ foreach ($setting in $settings.GetEnumerator()) {
     $newBem = $Setting.Value[0]
     $newAgg = $Setting.Value[1]
     $shouldAlloc = $Setting.Value[2]
+    $baseCurrency = $curMarket.base_currency
    
     if ($shouldAlloc) {
-        $allocPct = [Math]::Floor(100 / $allocationCount)
+        $allocPct = [Math]::Floor(100 / $baseCurrency)
     } else {
         $allocPct = 0
     }
 
-    if ($allocPct -gt $global:MaxAllocationPct) {
+    if ($allocPct -gt $global:MaxAllocationPct -and $baseCurrency -eq "BUSD") {
         $allocPct = $global:MaxAllocationPct
     }
 
