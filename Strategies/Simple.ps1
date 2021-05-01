@@ -101,7 +101,7 @@ foreach ($setting in $marketsToEnable) {
     }
 
     if ($curMarket.bem_pct -ne $newBem -or $curMarket.aggressiveness_pct -ne $newAgg) {
-        Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg
+        Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct 10
     }
 
     if ($shouldAlloc -and -not $allocationActive) {

@@ -91,6 +91,7 @@ function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPc
         $hashSet += @{"aggressiveness_pct"=$AggressivenessPct}
     }
     if ($null -ne $MinTradeProfitPct) {
+        $hashSet += @{"track_mtp_pct"=$False}
         $hashSet += @{"min_trade_profit_pct"=$MinTradeProfitPct}
     }
 
