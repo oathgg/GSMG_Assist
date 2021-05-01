@@ -25,7 +25,12 @@ foreach ($market in $global:MarketsToScan) {
             $shouldAllocate = $true
         }
         elseif ($pctChangeFromATH -le -20) {
-            $bemPct = "0"
+            if ($bagPct -lt 40) {
+                $bemPct = "2"
+            }
+            else {
+                $bemPct = "0"
+            }
             $shouldAllocate = $true
         } 
         # This works in a bull market, if we're not in a bull market then we should disable this elseif statement
