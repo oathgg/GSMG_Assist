@@ -25,6 +25,7 @@ $global:MarketsToScan = @(
     "VETBUSD",
     "CAKEBUSD",
     "UNIBUSD",
+    "TRXBUSD",
 
     #BTC
     "ETHBTC",

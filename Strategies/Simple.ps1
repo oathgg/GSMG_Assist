@@ -64,6 +64,10 @@ foreach ($setting in $marketsToDisable) {
     if ($curMarket.quantity_reserved -lt 1) {
         Set-GMSGMarketStatus -Market $marketName -Enabled $False
     }
+
+    if ($curMarket.allocation -ne 0) {
+        Set-GMSGMarketAllocation -Market $marketName -AllocationPct 0
+    }
 }
 
 $marketsToEnable = $settings.Values | Where-Object { $_[2] } | Select-Object -First $global:MaxMarketCount
