@@ -10,7 +10,11 @@ function ConvertTo-GSMGMessage($Hashset) {
         if ($body -ne "{") {
             $body += ","
         }
-        $body += '"' + $key + '":"' + $Hashset.Item($key) + '"' 
+        if ($Hashset.Item($key).GetType().Name -eq "Boolean") {
+            $body += '"' + $key + '":' + $Hashset.Item($key).ToString().ToLower()
+        } else {
+            $body += '"' + $key + '":"' + $Hashset.Item($key) + '"'
+        }
     }
 
     $body += "}"
@@ -107,11 +111,20 @@ function Get-GSMGMarkets() {
     $uri = "$script:baseUri/api/v1/markets"
     $res = Invoke-GSMGRequest -Uri $Uri -Method Get -RequiresToken
 
-    return $res.markets | Where-Object { $_.enabled -eq $true }
+    return $res.markets
 }
 
 function Set-GMSGMarketAllocation($Market, $AllocationPct) {
     $uri = "$script:baseUri/api/v1/markets/Binance:$Market/percent/$AllocationPct"
     $res = Invoke-GSMGRequest -Uri $Uri -Method Put -RequiresToken
     Write-Host "[$Market] -> Allocation: $AllocationPct"
+}
+
+function Set-GMSGMarketStatus($Market, $Enabled) {
+    $uri = "$script:baseUri/api/v1/markets/Binance:$Market"
+
+    $body = ConvertTo-GSMGMessage -Hashset @{"enabled"=$Enabled}
+
+    $res = Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken
+    Write-Host "[$Market] -> Status: $Enabled"
 }

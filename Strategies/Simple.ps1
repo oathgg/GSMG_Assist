@@ -1,11 +1,16 @@
-﻿$markets = Get-GSMGMarkets
+﻿$GSMGmarkets = Get-GSMGMarkets
 $Settings = @{}
 
-foreach ($market in $markets) {
-    $marketName = $market.name.Replace("Binance:", "")
+foreach ($market in $global:MarketsToScan) {
+    $marketName = $market
     [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1d" -CandleLimit 50 -IncludeCurrentCandle
     [float] $pctChange24h = (Get-24hTicker($marketName)).priceChangePercent
+    $market = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
     $bagPct = [float] $market.vol_sells_worth / ([float] $market.managed_value_usd / 100)
+
+    if ([Double]::IsNaN($bagPct)) {
+        $bagPct = 0
+    }
 
     $bemPct = "-15"
     $aggressivenessPct = "10"
@@ -31,7 +36,7 @@ foreach ($market in $markets) {
         #>
     }
 
-    $Settings += @{$marketName = @($bemPct, $aggressivenessPct, $shouldAllocate, $market.base_currency)}
+    $Settings += @{$marketName = @($bemPct, $aggressivenessPct, $shouldAllocate, $market.base_currency, $marketName)}
 }
 
 # { BUSD = 8,
@@ -51,8 +56,18 @@ foreach ($setting in $settings.GetEnumerator()) {
     }
 }
 
+$marketsToDisable = $settings.Values | Where-Object { -not $_[2] }
+foreach ($market in $marketsToDisable) {
+    $marketName = $market[4]
+    $curMarket = $GSMGmarkets | Where-Object {$_.market_name -eq $marketName}
+
+    if ($curMarket.is_active -and $curMarket.quantity_reserved -lt 1) {
+        Set-GMSGMarketStatus -Market $marketName -Enabled $False
+    }
+}
+
 foreach ($setting in $settings.GetEnumerator()) {
-    $curMarket = $markets | Where-Object {$_.market_name -eq $setting.key}
+    $curMarket = $GSMGmarkets | Where-Object {$_.market_name -eq $setting.key}
     $newBem = $Setting.Value[0]
     $newAgg = $Setting.Value[1]
     $shouldAlloc = $Setting.Value[2]
@@ -76,4 +91,8 @@ foreach ($setting in $settings.GetEnumerator()) {
     if ($curMarket.bem_pct -ne $newBem -or $curMarket.aggressiveness_pct -ne $newAgg) {
         Set-GSMGSetting -Market $Setting.Key -BemPct $newBem -AggressivenessPct $newAgg
     }
+
+    if ($shouldAlloc) {
+        Set-GMSGMarketStatus -Market $Setting.Key -Enable $True
+    } 
 }
