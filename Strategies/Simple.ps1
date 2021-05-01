@@ -22,8 +22,9 @@ foreach ($market in $markets) {
             $bemPct = "0"
             $shouldAllocate = $true
         } 
+        # This works in a bull market, if we're not in a bull market then we should disable this elseif statement
         elseif ($pctChangeFromATH -le -10) {
-            $bemPct = "-5"
+            $bemPct = "0"
             $shouldAllocate = $true
         } 
     }
