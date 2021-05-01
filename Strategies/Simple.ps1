@@ -26,6 +26,9 @@ foreach ($market in $global:MarketsToScan) {
             $shouldAllocate = $true
         }
         elseif ($pctChangeFromATH -le -20) {
+            # This might be too aggressive, we should verify if this setting is good or not.
+            # Default behaviour would have been bempct = 0, however, We noticed that we run out of bags quite early...
+            # We either increase the minprofit or we increase the BEM so we buy more often
             if ($bagPct -lt 30) {
                 $bemPct = "2"
             }
