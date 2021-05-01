@@ -61,7 +61,7 @@ foreach ($market in $marketsToDisable) {
     $marketName = $market[4]
     $curMarket = $GSMGmarkets | Where-Object {$_.market_name -eq $marketName}
 
-    if ($curMarket.is_active -and $curMarket.quantity_reserved -lt 1) {
+    if ($curMarket.quantity_reserved -lt 1) {
         Set-GMSGMarketStatus -Market $marketName -Enabled $False
     }
 }

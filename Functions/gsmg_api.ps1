@@ -126,5 +126,5 @@ function Set-GMSGMarketStatus($Market, $Enabled) {
     $body = ConvertTo-GSMGMessage -Hashset @{"enabled"=$Enabled}
 
     $res = Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken
-    Write-Host "[$Market] -> Status: $Enabled"
+    Write-Host "[$Market] -> Enabled: $Enabled"
 }
