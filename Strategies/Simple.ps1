@@ -6,8 +6,8 @@ foreach ($market in $global:MarketsToScan) {
     $marketName = $market
     [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1d" -CandleLimit 50 -IncludeCurrentCandle
     [float] $pctChange24h = (Get-24hTicker($marketName)).priceChangePercent
-    $market = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
-    $bagPct = [float] $market.vol_sells_worth / ([float] $market.managed_value_usd / 100)
+    $allocation = $GSMGAllocations | Where-Object { $_.market_name -match $marketName }
+    $bagPct = [float] $allocation.vol_sells_worth / ([float] $allocation.managed_value_usd / 100)
 
     if ([Double]::IsNaN($bagPct)) {
         $bagPct = 0
