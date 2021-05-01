@@ -22,6 +22,10 @@ foreach ($market in $markets) {
             $bemPct = "0"
             $shouldAllocate = $true
         } 
+        elseif ($pctChangeFromATH -le -10) {
+            $bemPct = "-2"
+            $shouldAllocate = $true
+        } 
     }
 
     $Settings += @{$marketName = @($bemPct, $aggressivenessPct, $shouldAllocate)}
