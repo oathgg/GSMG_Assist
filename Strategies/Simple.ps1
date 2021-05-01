@@ -3,7 +3,7 @@ $Settings = @{}
 
 foreach ($market in $markets) {
     $marketName = $market.name.Replace("Binance:", "")
-    [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1d" -CandleLimit 1000 -IncludeCurrentCandle
+    [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1d" -CandleLimit 50 -IncludeCurrentCandle
     [float] $pctChange24h = (Get-24hTicker($marketName)).priceChangePercent
     $bagPct = [float] $market.vol_sells_worth / ([float] $market.managed_value_usd / 100)
 
