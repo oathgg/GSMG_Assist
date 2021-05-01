@@ -57,7 +57,7 @@ foreach ($setting in $settings.GetEnumerator()) {
     $baseCurrency = $curMarket.base_currency
    
     if ($shouldAlloc) {
-        $allocPct = [Math]::Floor(100 / $baseCurrency)
+        $allocPct = [Math]::Floor(100 / $allocationCount[$baseCurrency])
     } else {
         $allocPct = 0
     }
