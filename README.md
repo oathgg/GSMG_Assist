@@ -36,4 +36,5 @@ $global:MarketsToScan = @(
     "IOTXBTC"
 )
 $global:MaxMarketCount = 10
+$global:MinProfitPct = 5
 ```

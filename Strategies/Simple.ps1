@@ -112,8 +112,8 @@ foreach ($setting in $marketsToEnable) {
         Set-GMSGMarketAllocation -Market $marketName -AllocationPct $allocPct
     }
 
-    if ($curMarket.bem_pct -ne $newBem -or $curMarket.aggressiveness_pct -ne $newAgg -or $curMarket.aggressiveness_pct -ne $global:AggressivenessPct) {
-        Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $global:AggressivenessPct
+    if ($curMarket.bem_pct -ne $newBem -or $curMarket.aggressiveness_pct -ne $newAgg -or $curMarket.min_trade_profit_pct -ne $global:MinProfitPct) {
+        Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $global:MinProfitPct
     }
 
     if ($shouldAlloc -and -not $allocationActive) {
