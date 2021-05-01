@@ -70,9 +70,9 @@ $marketsToEnable = $settings.Values | Where-Object { $_[2] } | Select-Object -Fi
 foreach ($setting in $marketsToEnable) {
     $marketName = $setting[4]
     $curMarket = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
-    $newBem = $Setting.Value[0]
-    $newAgg = $Setting.Value[1]
-    $shouldAlloc = $Setting.Value[2]
+    $newBem = $Setting[0]
+    $newAgg = $Setting[1]
+    $shouldAlloc = $Setting[2]
     $baseCurrency = $curMarket.base_currency
    
     if ($shouldAlloc) {
@@ -89,14 +89,14 @@ foreach ($setting in $marketsToEnable) {
 
     # Reduce spam by checking if we're actually changing anything to what the server has
     if ($curMarket.allocation -ne $allocPct) {
-        Set-GMSGMarketAllocation -Market $Setting.Key -AllocationPct $allocPct
+        Set-GMSGMarketAllocation -Market $marketName -AllocationPct $allocPct
     }
 
     if ($curMarket.bem_pct -ne $newBem -or $curMarket.aggressiveness_pct -ne $newAgg) {
-        Set-GSMGSetting -Market $Setting.Key -BemPct $newBem -AggressivenessPct $newAgg
+        Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg
     }
 
     if ($shouldAlloc) {
-        Set-GMSGMarketStatus -Market $Setting.Key -Enable $True
+        Set-GMSGMarketStatus -Market $marketName -Enable $True
     } 
 }
