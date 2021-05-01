@@ -1,4 +1,4 @@
-﻿$markets = Get-GSMGMarkets
+﻿$markets = Get-GSMGMarkets | Where-Object { $_.base_currency -eq "BUSD" }
 $Settings = @{}
 
 foreach ($market in $markets) {
