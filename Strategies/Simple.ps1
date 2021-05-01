@@ -47,7 +47,7 @@ foreach ($market in $global:MarketsToScan) {
     }
 
     if ($shouldAllocate) {
-        Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct"
+        Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct, MPROFIT: $global:MinProfitPct"
     }
     $Settings += @{$marketName = @($bemPct, $aggressivenessPct, $shouldAllocate, $market.base_currency, $marketName)}
 }
