@@ -31,4 +31,5 @@ $global:MarketsToScan = @(
     "TROYBTC",
     "IOTXBTC"
 )
+$global:MaxMarketCount = 10
 ```

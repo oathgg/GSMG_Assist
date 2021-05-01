@@ -57,8 +57,8 @@ foreach ($setting in $settings.GetEnumerator()) {
 }
 
 $marketsToDisable = $settings.Values | Where-Object { -not $_[2] }
-foreach ($market in $marketsToDisable) {
-    $marketName = $market[4]
+foreach ($setting in $marketsToDisable) {
+    $marketName = $setting[4]
     $curMarket = $GSMGmarkets | Where-Object {$_.market_name -eq $marketName}
 
     if ($curMarket.quantity_reserved -lt 1) {
@@ -66,8 +66,10 @@ foreach ($market in $marketsToDisable) {
     }
 }
 
-foreach ($setting in $settings.GetEnumerator()) {
-    $curMarket = $GSMGmarkets | Where-Object {$_.market_name -eq $setting.key}
+$marketsToEnable = $settings.Values | Where-Object { $_[2] } | Select-Object -First $global:MaxMarketCount
+foreach ($setting in $marketsToEnable) {
+    $marketName = $setting[4]
+    $curMarket = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
     $newBem = $Setting.Value[0]
     $newAgg = $Setting.Value[1]
     $shouldAlloc = $Setting.Value[2]
@@ -79,9 +81,11 @@ foreach ($setting in $settings.GetEnumerator()) {
         $allocPct = 0
     }
 
+    <#
     if ($allocPct -gt $global:MaxAllocationPct -and $baseCurrency -eq "BUSD") {
         $allocPct = $global:MaxAllocationPct
     }
+    #>
 
     # Reduce spam by checking if we're actually changing anything to what the server has
     if ($curMarket.allocation -ne $allocPct) {
