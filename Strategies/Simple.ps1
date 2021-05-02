@@ -1,6 +1,4 @@
 ﻿function Run-Strategy() {
-    $GSMGmarkets = Get-GSMGMarkets
-    $GSMGAllocations = Get-GSMGMarketAllocations    
     $Settings = @();
 
     foreach ($market in $global:MarketsToScan) {

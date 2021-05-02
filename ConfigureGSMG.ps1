@@ -72,7 +72,7 @@
         $newAgg = $Setting.AggressivenessPct
         $shouldAlloc = $Setting.ShouldAllocate
         $minProfitPct = $setting.MinProfitPct
-        $baseCurrency = $curMarket.BaseCurrency
+        $baseCurrency = $setting.BaseCurrency
         $allocationActive = $GSMGAllocations | ? { $_.market_name -match $marketName }
    
         if ($shouldAlloc) {

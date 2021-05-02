@@ -33,6 +33,9 @@ while ($true) {
         . $strategyPath
     }
 
+    $Global:GSMGmarkets = Get-GSMGMarkets
+    $Global:GSMGAllocations = Get-GSMGMarketAllocations  
+
     Clear-Host
 
     $Settings = Run-Strategy
