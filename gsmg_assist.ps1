@@ -22,17 +22,21 @@ if (-not (Test-Path "$curPath\parameters.ps1")) {
 
 while ($true) {
     Get-Latest -Path $curPath
-
-    Clear-Host
-
     . "$curPath\parameters.ps1"
-    
+    . "$curPath\CreateConfigurationObject.ps1"
+    . "$curPath\ConfigureGSMG.ps1"
+
     $strategyPath = "$curPath\Strategies\$global:GSMGStrategy.ps1"
     if (-not (Test-Path $strategyPath)) {
         Write-Warning "Could not find strategy with filename '$strategyPath'."
     } else {
         . $strategyPath
     }
+
+    Clear-Host
+
+    $Settings = Run-Strategy
+    Run-ConfigureGSMG -Settings $Settings
 
     Write-Host "Sleeping for 60 seconds before running strategy again..."
     Start-Sleep -Seconds 60
