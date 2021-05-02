@@ -30,12 +30,14 @@ foreach ($market in $global:MarketsToScan) {
             # This might be too aggressive, we should verify if this setting is good or not.
             # Default behaviour would have been bempct = 0, however, We noticed that we run out of bags quite early...
             # We either increase the minprofit or we increase the BEM so we buy more often
-            if ($bagPct -lt 20) {
-                $bemPct = "2"
-            }
-            else {
+            
+            #if ($bagPct -lt 20) {
+                #$bemPct = "2"
+            #}
+            #else {
                 $bemPct = "0"
-            }
+            #}
+
             $shouldAllocate = $true
         } 
         # This works in a bull market, if we're not in a bull market then we should disable this elseif statement
