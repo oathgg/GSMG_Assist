@@ -27,7 +27,7 @@ foreach ($market in $global:MarketsToScan) {
             $shouldAllocate = $true
             $minProfitPct = 10
         }
-        elseif ($pctChangeFromATH -le 20) {
+        elseif ($pctChangeFromATH -le -20) {
             $minProfitPct = 10
             $bemPct = "0"
             $shouldAllocate = $true
