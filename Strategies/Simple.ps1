@@ -72,15 +72,23 @@ foreach ($setting in $settings.GetEnumerator()) {
     }
 }
 
+$forcedActiveMarketsCount = @{}
 $marketsToDisable = $settings.Values | Where-Object { -not $_[2] }
 foreach ($setting in $marketsToDisable) {
     $marketName = $setting[4]
+    $baseCurrency = $setting[3]
     $curMarket = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
     $allocationActive = $GSMGAllocations | ? { $_.market_name -match $marketName }
+
+    if (-not $forcedActiveMarketsCount.ContainsKey($baseCurrency)) {
+        $forcedActiveMarketsCount.Add($baseCurrency, 0);
+    }
 
     # The amount of money we still have open in the coin
     if (-not $allocationActive -or ($allocationActive -and $allocationActive.managed_value_usd -lt 1)) {
         Set-GMSGMarketStatus -Market $marketName -Enabled $False
+    } else {
+        $forcedActiveMarketsCount[$baseCurrency]++
     }
 
     # Make sure we dont have any allocation left when we disable the market
@@ -90,11 +98,17 @@ foreach ($setting in $marketsToDisable) {
     }
 }
 
-$marketsToEnable = $settings.Values | Where-Object { $_[2] -and $_[3] -eq "BTC" } | Select-Object -First $global:MaxMarketCount
-if ($marketsToEnable.Count -lt 10) {
-    $extraBusdMarkets = $global:MaxMarketCount - $marketsToEnable.Count
-    $marketsToEnable += $settings.Values | Where-Object { $_[2] -and $_[3] -eq "BUSD" } | Select-Object -First $global:MaxMarketCount
+$marketsToEnable = $null
+$availableMarketSlots = $global:MaxMarketCount
+foreach ($baseCurrency in $forcedActiveMarketsCount.Keys) {
+    $availableMarketSlots -= $forcedActiveMarketsCount[$baseCurrency]
+
+    $marketsToAdd = $settings.Values | Where-Object { $_[2] -and $_[3] -eq $baseCurrency } | Select-Object -First $availableMarketSlots
+    $marketsToEnable += $marketsToAdd
+
+    $availableMarketSlots -= $marketsToAdd.Count
 }
+
 foreach ($setting in $marketsToEnable) {
     $marketName = $setting[4]
     $curMarket = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
