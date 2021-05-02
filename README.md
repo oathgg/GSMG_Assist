@@ -35,4 +35,5 @@ $global:MarketsToScan = @(
     "TROYBTC",
     "IOTXBTC"
 )
+$global:DoGetLatest = $true
 ```

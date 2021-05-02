@@ -21,7 +21,9 @@ if (-not (Test-Path "$curPath\parameters.ps1")) {
 . "$curPath\Functions\Tools.ps1"
 
 while ($true) {
-    Get-Latest -Path $curPath
+    if ($Global:DoGetLatest) {
+        Get-Latest -Path $curPath
+    }
     . "$curPath\parameters.ps1"
     . "$curPath\CreateConfigurationObject.ps1"
     . "$curPath\ConfigureGSMG.ps1"

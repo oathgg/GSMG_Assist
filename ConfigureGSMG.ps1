@@ -68,12 +68,13 @@
     foreach ($setting in $marketsToEnable) {
         $marketName = $setting.MarketName
         $curMarket = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
+        $allocationActive = $GSMGAllocations | ? { $_.market_name -match $marketName }
+        
         $newBem = $Setting.BemPCT
         $newAgg = $Setting.AggressivenessPct
         $shouldAlloc = $Setting.ShouldAllocate
         $minProfitPct = $setting.MinProfitPct
         $baseCurrency = $setting.BaseCurrency
-        $allocationActive = $GSMGAllocations | ? { $_.market_name -match $marketName }
    
         if ($shouldAlloc) {
             $allocPct = [Math]::Floor(100 / $allocationCount[$baseCurrency])
