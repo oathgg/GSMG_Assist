@@ -90,7 +90,11 @@ foreach ($setting in $marketsToDisable) {
     }
 }
 
-$marketsToEnable = $settings.Values | Where-Object { $_[2] } | Select-Object -First $global:MaxMarketCount
+$marketsToEnable = $settings.Values | Where-Object { $_[2] -and $_[3] -eq "BTC" } | Select-Object -First $global:MaxMarketCount
+if ($marketsToEnable.Count -lt 10) {
+    $extraBusdMarkets = $global:MaxMarketCount - $marketsToEnable.Count
+    $marketsToEnable += $settings.Values | Where-Object { $_[2] -and $_[3] -eq "BUSD" } | Select-Object -First $global:MaxMarketCount
+}
 foreach ($setting in $marketsToEnable) {
     $marketName = $setting[4]
     $curMarket = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
