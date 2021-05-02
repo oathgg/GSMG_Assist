@@ -19,7 +19,7 @@ foreach ($market in $global:MarketsToScan) {
     $shouldAllocate = $false
 
     # Market is reversing after a downtrend??
-    if ($pctChange24h -gt -10)
+    if ($pctChange24h -gt -5)
     {
         if ($pctChangeFromATH -le -40 -and $bagPct -lt 60) {
             $bemPct = "2"
