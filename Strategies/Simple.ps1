@@ -14,6 +14,7 @@ foreach ($market in $global:MarketsToScan) {
         $bagPct = 0
     }
 
+    $minProfitPct = 1;
     $bemPct = "-15"
     $aggressivenessPct = "10"
     $shouldAllocate = $false
@@ -24,20 +25,17 @@ foreach ($market in $global:MarketsToScan) {
         if ($pctChangeFromATH -le -40 -and $bagPct -lt 60) {
             $bemPct = "2"
             $shouldAllocate = $true
+            $minProfitPct = 10
         }
-        # 20 is defensive, 15 is normal, 10 is quite aggressive and you might be buying with a sell price above the ATH
+        elseif ($pctChangeFromATH -le 20) {
+            $minProfitPct = 10
+            $bemPct = "0"
+            $shouldAllocate = $true
+        }
+        # -15 might be too aggressive
         elseif ($pctChangeFromATH -le -15) {
-            # This might be too aggressive, we should verify if this setting is good or not.
-            # Default behaviour would have been bempct = 0, however, We noticed that we run out of bags quite early...
-            # We either increase the minprofit or we increase the BEM so we buy more often
-            
-            #if ($bagPct -lt 20) {
-                #$bemPct = "2"
-            #}
-            #else {
-                $bemPct = "0"
-            #}
-
+            $minProfitPct = 5
+            $bemPct = "0"
             $shouldAllocate = $true
         } 
         # This works in a bull market, if we're not in a bull market then we should disable this elseif statement
@@ -50,9 +48,9 @@ foreach ($market in $global:MarketsToScan) {
     }
 
     if ($shouldAllocate) {
-        Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct, MPROFIT: $global:MinProfitPct"
+        Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct, MPROFIT: $minProfitPct"
     }
-    $Settings += @{$marketName = @($bemPct, $aggressivenessPct, $shouldAllocate, $market.base_currency, $marketName)}
+    $Settings += @{$marketName = @($bemPct, $aggressivenessPct, $shouldAllocate, $market.base_currency, $marketName, $minProfitPct)}
 }
 
 # Defines how many allocations we need for the specified market
@@ -122,6 +120,7 @@ foreach ($setting in $marketsToEnable) {
     $newBem = $Setting[0]
     $newAgg = $Setting[1]
     $shouldAlloc = $Setting[2]
+    $minProfitPct = $setting[5]
     $baseCurrency = $curMarket.base_currency
     $allocationActive = $GSMGAllocations | ? { $_.market_name -match $marketName }
    
@@ -144,7 +143,7 @@ foreach ($setting in $marketsToEnable) {
         Set-GMSGMarketAllocation -Market $marketName -AllocationPct $allocPct
     }
 
-    if ($curMarket.bem_pct -ne $newBem -or $curMarket.aggressiveness_pct -ne $newAgg -or $curMarket.min_trade_profit_pct -ne $global:MinProfitPct) {
-        Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $global:MinProfitPct
+    if ($curMarket.bem_pct -ne $newBem -or $curMarket.aggressiveness_pct -ne $newAgg -or $curMarket.min_trade_profit_pct -ne $minProfitPct) {
+        Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $minProfitPct
     }
 }
