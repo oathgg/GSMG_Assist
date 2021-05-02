@@ -34,10 +34,16 @@ foreach ($market in $global:MarketsToScan) {
         }
         # -15 might be too aggressive
         elseif ($pctChangeFromATH -le -15) {
-            $minProfitPct = 5
+            # If we're on our last % of our distance to the ATH then we just go back to 5% minprofit pct
+            if ($pctChangeFromATH -le -17) {
+                $minProfitPct = 10
+            } else {
+                $minProfitPct = 5
+            }
             $bemPct = "0"
             $shouldAllocate = $true
         } 
+
         # This works in a bull market, if we're not in a bull market then we should disable this elseif statement
         <#
         elseif ($pctChangeFromATH -le -10) {
