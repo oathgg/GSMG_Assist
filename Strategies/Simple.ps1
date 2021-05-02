@@ -103,7 +103,7 @@ foreach ($setting in $marketsToDisable) {
 
 # Calculates the amount of markets we want to enable so we don't cross the max market count
 $marketsToEnable = $null
-$availableMarketSlots = $global:MaxMarketCount
+$availableMarketSlots = (Get-GSMGSubscription).max_markets_across_exchanges
 foreach ($baseCurrency in $forcedActiveMarketsCount.Keys) {
     $availableMarketSlots -= $forcedActiveMarketsCount[$baseCurrency]
 

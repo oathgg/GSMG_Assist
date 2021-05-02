@@ -78,6 +78,13 @@ function New-GSMGAuthentication($Email, $Password, $Code) {
     $script:Token = $res.token
 }
 
+function Get-GSMGSubscription() {
+    $uri = "$script:baseUri/api/v1/subscriptions/current"
+    $res = Invoke-GSMGRequest -Uri $Uri -Method Get -RequiresToken
+
+    return $res
+}
+
 #PATCH /api/v1/markets/Binance:CAKEBUSD HTTP/1.1
 function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPct) {
     $uri = "$script:baseUri/api/v1/markets/Binance:$Market"
