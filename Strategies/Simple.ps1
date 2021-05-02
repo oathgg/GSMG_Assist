@@ -26,7 +26,7 @@ foreach ($market in $global:MarketsToScan) {
             $shouldAllocate = $true
         }
         # 20 is defensive, 15 is normal, 10 is quite aggressive and you might be buying with a sell price above the ATH
-        elseif ($pctChangeFromATH -le -20) {
+        elseif ($pctChangeFromATH -le -15) {
             # This might be too aggressive, we should verify if this setting is good or not.
             # Default behaviour would have been bempct = 0, however, We noticed that we run out of bags quite early...
             # We either increase the minprofit or we increase the BEM so we buy more often
