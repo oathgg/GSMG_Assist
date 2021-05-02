@@ -5,8 +5,8 @@
         $marketName = $market
         [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1h" -CandleLimit 960 -IncludeCurrentCandle
         [float] $pctChange24h = (Get-24hTicker($marketName)).priceChangePercent
-        $market = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
-        $allocation = $GSMGAllocations | Where-Object { $_.market_name -match $marketName }
+        $market = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
+        $allocation = $Global:GSMGAllocations | Where-Object { $_.market_name -match $marketName }
         $bagPct = [float] $allocation.vol_sells_worth / ([float] $allocation.managed_value_usd / 100)
 
         if ([Double]::IsNaN($bagPct)) {

@@ -27,8 +27,8 @@
         $marketName = $setting.MarketName
         $baseCurrency = $setting.BaseCurrency
 
-        $curMarket = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
-        $allocationActive = $GSMGAllocations | ? { $_.market_name -match $marketName }
+        $curMarket = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
+        $allocationActive = $Global:GSMGAllocations | ? { $_.market_name -match $marketName }
 
         if (-not $forcedActiveMarketsCount.ContainsKey($baseCurrency)) {
             $forcedActiveMarketsCount.Add($baseCurrency, 0);
@@ -67,8 +67,8 @@
     # Enable the markets we want to enable and set the predefined settings for that particular market.
     foreach ($setting in $marketsToEnable) {
         $marketName = $setting.MarketName
-        $curMarket = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
-        $allocationActive = $GSMGAllocations | ? { $_.market_name -match $marketName }
+        $curMarket = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
+        $allocationActive = $Global:GSMGAllocations | ? { $_.market_name -match $marketName }
         
         $newBem = $Setting.BemPCT
         $newAgg = $Setting.AggressivenessPct
