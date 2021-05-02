@@ -55,8 +55,10 @@ foreach ($market in $global:MarketsToScan) {
     $Settings += @{$marketName = @($bemPct, $aggressivenessPct, $shouldAllocate, $market.base_currency, $marketName)}
 }
 
-# { BUSD = 8,
-#   BTC = 1
+# Defines how many allocations we need for the specified market
+# { 
+#     BUSD = 8,
+#     BTC = 1
 # }
 $allocationCount = @{}
 foreach ($setting in $settings.GetEnumerator()) {
@@ -72,6 +74,9 @@ foreach ($setting in $settings.GetEnumerator()) {
     }
 }
 
+# Enables and disables markets which are no longer applicable.
+# We keep track of the amount of markets which we want to disable but we cant,
+# A reason why we can't would be because we still have open sell orders.
 $forcedActiveMarketsCount = @{}
 $marketsToDisable = $settings.Values | Where-Object { -not $_[2] }
 foreach ($setting in $marketsToDisable) {
@@ -98,6 +103,7 @@ foreach ($setting in $marketsToDisable) {
     }
 }
 
+# Calculates the amount of markets we want to enable so we don't cross the max market count
 $marketsToEnable = $null
 $availableMarketSlots = $global:MaxMarketCount
 foreach ($baseCurrency in $forcedActiveMarketsCount.Keys) {
@@ -109,6 +115,7 @@ foreach ($baseCurrency in $forcedActiveMarketsCount.Keys) {
     $availableMarketSlots -= $marketsToAdd.Count
 }
 
+# Enable the markets we want to enable and set the predefined settings for that particular market.
 foreach ($setting in $marketsToEnable) {
     $marketName = $setting[4]
     $curMarket = $GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
