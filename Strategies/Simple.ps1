@@ -34,12 +34,7 @@ foreach ($market in $global:MarketsToScan) {
         }
         # -15 might be too aggressive
         elseif ($pctChangeFromATH -le -15) {
-            # If we're on our last % of our distance to the ATH then we just go back to 5% minprofit pct
-            if ($pctChangeFromATH -le -17) {
-                $minProfitPct = 10
-            } else {
-                $minProfitPct = 5
-            }
+            $minProfitPct = 5
             $bemPct = "0"
             $shouldAllocate = $true
         } 
@@ -98,6 +93,10 @@ foreach ($setting in $marketsToDisable) {
     if (-not $allocationActive -or ($allocationActive -and $allocationActive.managed_value_usd -lt 1)) {
         Set-GMSGMarketStatus -Market $marketName -Enabled $False
     } else {
+        $newBem = $Setting[0]
+        $newAgg = $Setting[1]
+        $minProfitPct = $setting[5]
+        Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $minProfitPct
         $forcedActiveMarketsCount[$baseCurrency]++
     }
 
