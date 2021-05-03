@@ -18,7 +18,7 @@
         }
 
         # Default settings
-        $minProfitPct = 5;
+        $minProfitPct = 1;
         $bemPct = "-15"
         $aggressivenessPct = "10"
         $shouldAllocate = $false
@@ -43,7 +43,7 @@
             }
             elseif ($pctChangeFromATH -le -30) {
                 $bemPct = 0
-                $minProfitPct = 15
+                $minProfitPct = 10
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -20) {
@@ -52,7 +52,7 @@
                 } else {
                     $bemPct = 0
                 }
-                $minProfitPct = 15
+                $minProfitPct = 5
                 $shouldAllocate = $true
             }
             # -15 might be too aggressive
