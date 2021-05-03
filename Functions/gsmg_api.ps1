@@ -124,7 +124,7 @@ function Get-GSMGMarkets() {
 
 function Set-GMSGMarketAllocation($Market, $AllocationPct) {
     $uri = "$script:baseUri/api/v1/markets/Binance:$Market/percent/$AllocationPct"
-    $res = Invoke-GSMGRequest -Uri $Uri -Method Put -RequiresToken
+    Invoke-GSMGRequest -Uri $Uri -Method Put -RequiresToken
     #Write-Host "[$Market] -> Allocation: $AllocationPct"
 }
 
@@ -133,6 +133,6 @@ function Set-GMSGMarketStatus($Market, $Enabled) {
 
     $body = ConvertTo-GSMGMessage -Hashset @{"enabled"=$Enabled}
 
-    $res = Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken
+    Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken
     #Write-Host "[$Market] -> Enabled: $Enabled"
 }

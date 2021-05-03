@@ -40,7 +40,7 @@ function Run-ConfigureGSMG($Settings) {
         $baseCurrency = $setting.BaseCurrency
 
         $curMarket = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
-        $allocationActive = $Global:GSMGAllocations | ? { $_.market_name -match $marketName }
+        $allocationActive = $Global:GSMGAllocations | Where-Object { $_.market_name -match $marketName }
 
         if (-not $forcedActiveMarketsCount.ContainsKey($baseCurrency)) {
             $forcedActiveMarketsCount.Add($baseCurrency, 0);
@@ -59,7 +59,7 @@ function Run-ConfigureGSMG($Settings) {
 
         # Make sure we dont have any allocation left when we disable the market
         # We set it to 0 in case we do have some of our bag left, this way we "leave" the market but sell orders remain open.
-        if ($curMarket.allocation -ne $null -and $curMarket.allocation -ne 0) {
+        if ($null -ne $curMarket.allocation -and $curMarket.allocation -ne 0) {
             Set-GMSGMarketAllocation -Market $marketName -AllocationPct 0
         }
     }
@@ -80,7 +80,7 @@ function Run-ConfigureGSMG($Settings) {
     foreach ($setting in $marketsToEnable) {
         $marketName = $setting.MarketName
         $curMarket = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
-        $allocationActive = $Global:GSMGAllocations | ? { $_.market_name -match $marketName }
+        $allocationActive = $Global:GSMGAllocations | Where-Object { $_.market_name -match $marketName }
         
         $newBem = $Setting.BemPCT
         $newAgg = $Setting.AggressivenessPct
