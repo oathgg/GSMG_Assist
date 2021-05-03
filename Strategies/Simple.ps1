@@ -32,11 +32,11 @@
                 $minProfitPct = 10
             }
             elseif ($pctChangeFromATH -le -20) {
-                if ($bagPct -lt 10) {
-                    $bemPct = 2
-                } else {
+                #if ($bagPct -lt 10) {
+                #    $bemPct = 2
+                #} else {
                     $bemPct = 0
-                }
+                #}
                 $minProfitPct = 10
                 $shouldAllocate = $true
             }
