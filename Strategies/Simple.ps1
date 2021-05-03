@@ -32,17 +32,13 @@
                 $minProfitPct = 15
             }
             elseif ($pctChangeFromATH -le -20) {
-                #if ($bagPct -lt 10) {
-                #    $bemPct = 2
-                #} else {
-                    $bemPct = 0
-                #}
+                $bemPct = 0
                 $minProfitPct = 10
                 $shouldAllocate = $true
             }
             # -15 might be too aggressive
             elseif ($pctChangeFromATH -le -15) {
-                if ($bagPct -lt 30) {
+                if ($bagPct -lt 20) {
                     $bemPct = 0
                     $minProfitPct = 5
                     $shouldAllocate = $true
