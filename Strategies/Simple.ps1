@@ -29,7 +29,7 @@
             if ($pctChangeFromATH -le -40 -and $bagPct -lt 60) {
                 $bemPct = 2
                 $shouldAllocate = $true
-                $minProfitPct = 10
+                $minProfitPct = 15
             }
             elseif ($pctChangeFromATH -le -20) {
                 #if ($bagPct -lt 10) {
