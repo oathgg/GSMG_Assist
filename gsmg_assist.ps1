@@ -1,9 +1,8 @@
 ﻿function Get-Latest($Path) {
-    pushd
-    cd $Path
-    #git stash
+    Push-Location
+    Set-Location $Path
     git pull
-    popd
+    Pop-Location
 }
 
 $curPath = $PSScriptRoot
@@ -24,6 +23,7 @@ while ($true) {
     if ($Global:DoGetLatest) {
         Get-Latest -Path $curPath
     }
+    
     . "$curPath\parameters.ps1"
     . "$curPath\MarketHelper.ps1"
 
