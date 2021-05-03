@@ -6,9 +6,13 @@
         [float] $pctChange24h = (Get-24hTicker($marketName)).priceChangePercent
         $market = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
         $allocation = $Global:GSMGAllocations | Where-Object { $_.market_name -match $marketName }
-        $bagPct = [float] $allocation.vol_sells_worth / ([float] $allocation.managed_value_usd / 100)
 
-        if ([Double]::IsNaN($bagPct)) {
+        if ($allocation) {
+            $bagPct = [float] [Math]::Round(($allocation.open_sells_alloc_perc / $allocation.current_alloc) * 100, 1)
+            if ([Double]::IsNaN($bagPct)) {
+                $bagPct = 0
+            }
+        } else {
             $bagPct = 0
         }
 
