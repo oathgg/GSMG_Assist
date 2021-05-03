@@ -37,7 +37,7 @@
             }
             elseif ($pctChangeFromATH -le -20) {
                 if ($bagPct -gt 30) {
-                    $bemPct = -3
+                    $bemPct = -2
                 } else {
                     $bemPct = 0
                 }
