@@ -17,7 +17,7 @@
         }
 
         # Default settings
-        $minProfitPct = 1;
+        $minProfitPct = 5;
         $bemPct = "-15"
         $aggressivenessPct = "10"
         $shouldAllocate = $false
