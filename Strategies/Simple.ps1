@@ -1,5 +1,6 @@
 ﻿function Run-Strategy() {
     $Settings = @();
+    $addDefault = $true
 
     foreach ($marketName in ($global:MarketsToScan | Sort-Object)) {
         [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1h" -CandleLimit 720 -IncludeCurrentCandle
@@ -21,6 +22,11 @@
         $bemPct = "-15"
         $aggressivenessPct = "10"
         $shouldAllocate = $false
+
+        if ($addDefault) {
+            $Settings += New-ConfigurationObject -BemPct $bemPct -AggressivenessPct $aggressivenessPct -ShouldAllocate $shouldAllocate -BaseCurrency "" -MarketName "DEFAULT" -MinProfitPct $minProfitPct
+            $addDefault = $false
+        }
 
         # Market is reversing after a downtrend
         # We do not want to spend money when the market has been going up too fast

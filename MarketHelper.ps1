@@ -33,14 +33,19 @@ function Run-ConfigureGSMG($Settings) {
     # Enables and disables markets which are no longer applicable.
     # We keep track of the amount of markets which we want to disable but we cant,
     # A reason why we can't would be because we still have open sell orders.
-    $forcedActiveMarketsCount = @{}
-    $marketsToDisable = $settings | Where-Object { -not $_.ShouldAllocate }
-    foreach ($setting in $marketsToDisable) {
-        $marketName = $setting.MarketName
-        $baseCurrency = $setting.BaseCurrency
+    $marketsToDisable = @()
+    foreach ($activeAllocation in $Global:GSMGAllocations) {
+        $activeMarketName = $activeAllocation.Market_Name.Replace("Binance:", "")
+        if ($settings.MarketName -notcontains $activeMarketName) {
+            $marketsToDisable += $activeMarketName
+        }
+    }
 
+    $forcedActiveMarketsCount = @{}
+    foreach ($marketName in $marketsToDisable) {
         $curMarket = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
         $allocationActive = $Global:GSMGAllocations | Where-Object { $_.market_name -match $marketName }
+        $baseCurrency = $curMarket.base_currency
 
         if (-not $forcedActiveMarketsCount.ContainsKey($baseCurrency)) {
             $forcedActiveMarketsCount.Add($baseCurrency, 0);
@@ -50,6 +55,7 @@ function Run-ConfigureGSMG($Settings) {
         if (-not $allocationActive -or ($allocationActive -and $allocationActive.managed_value_usd -lt 1)) {
             Set-GMSGMarketStatus -Market $marketName -Enabled $False
         } else {
+            $Setting = $Settings | Where-Object { $_.MarketName -eq "DEFAULT" }
             $newBem = $Setting.BemPCT
             $newAgg = $Setting.AggressivenessPct
             $minProfitPct = $setting.MinProfitPct
@@ -67,7 +73,7 @@ function Run-ConfigureGSMG($Settings) {
     # Calculates the amount of markets we want to enable so we don't cross the max market count
     $marketsToEnable = $null
     $availableMarketSlots = (Get-GSMGSubscription).max_markets_across_exchanges
-    foreach ($baseCurrency in $forcedActiveMarketsCount.Keys) {
+    foreach ($baseCurrency in $global:MaxAllocationPct.Keys) {
         $availableMarketSlots -= $forcedActiveMarketsCount[$baseCurrency]
 
         $marketsToAdd = $settings | Where-Object { $_.ShouldAllocate -and $_.BaseCurrency -eq $baseCurrency } | Select-Object -First $availableMarketSlots
