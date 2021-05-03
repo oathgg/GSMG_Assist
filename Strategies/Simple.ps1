@@ -1,8 +1,7 @@
 ﻿function Run-Strategy() {
     $Settings = @();
 
-    foreach ($market in $global:MarketsToScan) {
-        $marketName = $market
+    foreach ($marketName in ($global:MarketsToScan | Sort-Object)) {
         [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1h" -CandleLimit 960 -IncludeCurrentCandle
         [float] $pctChange24h = (Get-24hTicker($marketName)).priceChangePercent
         $market = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
@@ -13,6 +12,7 @@
             $bagPct = 0
         }
 
+        # Default settings
         $minProfitPct = 1;
         $bemPct = "-15"
         $aggressivenessPct = "10"
