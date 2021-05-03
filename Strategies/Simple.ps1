@@ -36,7 +36,7 @@
                 $minProfitPct = 15
             }
             elseif ($pctChangeFromATH -le -20) {
-                if ($bagPct -gt 25) {
+                if ($bagPct -gt 20) {
                     $bemPct = -3
                 } else {
                     $bemPct = 0
