@@ -46,7 +46,7 @@
                 } else {
                     $bemPct = 0
                 }
-                $minProfitPct = 10
+                $minProfitPct = 15
                 $shouldAllocate = $true
             }
             # -15 might be too aggressive
