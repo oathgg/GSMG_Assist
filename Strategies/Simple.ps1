@@ -26,20 +26,28 @@
         # We do not want to spend money when the market has been going up too fast
         if ($pctChange24h -gt -5 -and $pctChange24h -lt 10)
         {
-            if ($pctChangeFromATH -le -40 -and $bagPct -lt 60) {
-                $bemPct = 2
+            if ($pctChangeFromATH -le -40) {
+                if ($bagPct -lt 60) {
+                    $bemPct = 2
+                } else {
+                    $bemPct = 0
+                }
                 $shouldAllocate = $true
                 $minProfitPct = 15
             }
             elseif ($pctChangeFromATH -le -20) {
-                $bemPct = 0
+                if ($bagPct -gt 30) {
+                    $bemPct = -3
+                } else {
+                    $bemPct = 0
+                }
                 $minProfitPct = 10
                 $shouldAllocate = $true
             }
             # -15 might be too aggressive
             elseif ($pctChangeFromATH -le -15) {
-                if ($bagPct -lt 20) {
-                    $bemPct = 0
+                if ($bagPct -lt 15) {
+                    $bemPct = -2
                     $minProfitPct = 5
                     $shouldAllocate = $true
                 }
