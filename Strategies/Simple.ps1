@@ -22,20 +22,26 @@
         if ($pctChange24h -gt -5)
         {
             if ($pctChangeFromATH -le -40 -and $bagPct -lt 60) {
-                $bemPct = "2"
+                $bemPct = 2
                 $shouldAllocate = $true
                 $minProfitPct = 10
             }
             elseif ($pctChangeFromATH -le -20) {
+                if ($bagPct -lt 10) {
+                    $bemPct = 2
+                } else {
+                    $bemPct = 0
+                }
                 $minProfitPct = 10
-                $bemPct = "0"
                 $shouldAllocate = $true
             }
             # -15 might be too aggressive
             elseif ($pctChangeFromATH -le -15) {
-                $minProfitPct = 5
-                $bemPct = "0"
-                $shouldAllocate = $true
+                if ($bagPct -lt 30) {
+                    $bem = 0
+                    $minProfitPct = 5
+                    $shouldAllocate = $true
+                }
             } 
         }
 
