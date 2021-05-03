@@ -2,7 +2,7 @@
     $Settings = @();
 
     foreach ($marketName in ($global:MarketsToScan | Sort-Object)) {
-        [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1h" -CandleLimit 960 -IncludeCurrentCandle
+        [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1h" -CandleLimit 720 -IncludeCurrentCandle
         [float] $pctChange24h = (Get-24hTicker($marketName)).priceChangePercent
         $market = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
         $allocation = $Global:GSMGAllocations | Where-Object { $_.market_name -match $marketName }
@@ -42,7 +42,7 @@
             }
             elseif ($pctChangeFromATH -le -20) {
                 if ($bagPct -gt 20) {
-                    $bemPct = -3
+                    $bemPct = -4
                 } else {
                     $bemPct = 0
                 }
@@ -51,8 +51,8 @@
             }
             # -15 might be too aggressive
             elseif ($pctChangeFromATH -le -15) {
-                if ($bagPct -lt 10) {
-                    $bemPct = -2
+                if ($bagPct -lt 15) {
+                    $bemPct = -5
                     $minProfitPct = 5
                     $shouldAllocate = $true
                 }
