@@ -1,4 +1,16 @@
-﻿function Run-ConfigureGSMG($Settings) {
+﻿function New-ConfigurationObject($BemPct, $AggressivenessPct, $ShouldAllocate, $BaseCurrency, $MarketName, $MinProfitPct) {
+    $Settings = New-Object PSObject -Property @{ 
+        MarketName=$MarketName;
+        BemPCT=$BemPct; 
+        AggressivenessPct=$AggressivenessPct; 
+        ShouldAllocate=$ShouldAllocate; 
+        BaseCurrency=$BaseCurrency; 
+        MinProfitPct=$MinProfitPct
+    }
+    return $Settings
+}
+
+function Run-ConfigureGSMG($Settings) {
     # Defines how many allocations we need for the specified market
     # { 
     #     BUSD = 8,

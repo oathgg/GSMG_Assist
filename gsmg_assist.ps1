@@ -25,8 +25,7 @@ while ($true) {
         Get-Latest -Path $curPath
     }
     . "$curPath\parameters.ps1"
-    . "$curPath\CreateConfigurationObject.ps1"
-    . "$curPath\ConfigureGSMG.ps1"
+    . "$curPath\MarketHelper.ps1"
 
     $strategyPath = "$curPath\Strategies\$global:GSMGStrategy.ps1"
     if (-not (Test-Path $strategyPath)) {
