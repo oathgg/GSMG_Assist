@@ -43,15 +43,11 @@ function Run-ConfigureGSMG($Settings) {
         }
     }
 
-    $forcedActiveMarketsCount = @{}
+    $forcedActiveMarkets = @()
     foreach ($marketName in $marketsToDisable) {
         $curMarket = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
         $allocationActive = $Global:GSMGAllocations | Where-Object { $_.market_name -match $marketName }
         $baseCurrency = $curMarket.base_currency
-
-        if (-not $forcedActiveMarketsCount.ContainsKey($baseCurrency)) {
-            $forcedActiveMarketsCount.Add($baseCurrency, 0);
-        }
 
         # The amount of money we still have open in the coin
         if (-not $allocationActive -or ($allocationActive -and $allocationActive.managed_value_usd -lt 1)) {
@@ -65,8 +61,8 @@ function Run-ConfigureGSMG($Settings) {
             $minProfitPct = $defaultSettings.MinProfitPct
             $trailingBuy = $defaultSettings.TrailingBuy
             Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $minProfitPct -TrailingBuy $trailingBuy
-            $forcedActiveMarketsCount[$baseCurrency]++
-
+            
+            $forcedActiveMarkets += $marketname
             Write-Warning "[$marketname] Cannot disable market, managed value : $($allocationActive.managed_value_usd)"
         }
 
@@ -78,18 +74,22 @@ function Run-ConfigureGSMG($Settings) {
     }
 
     # Calculates the amount of markets we want to enable so we don't cross the max market count
-    $marketsToEnable = @()
     $availableMarketSlots = (Get-GSMGSubscription).max_markets_across_exchanges
-    foreach ($baseCurrency in $global:MaxAllocationPct.Keys) {
-        $availableMarketSlots -= $forcedActiveMarketsCount[$baseCurrency]
+    $availableMarketSlots -= $forcedActiveMarkets.Count
+    $marketsToEnable = @()
+    if ($availableMarketSlots -gt 0) {
+        foreach ($marketToAdd in $settings | Where-Object { $_.ShouldAllocate }) {
+            if ($forcedActiveMarkets -notcontains $marketToAdd.MarketName) {
+                $marketsToEnable += $marketToAdd
 
-        if ($availableMarketSlots -gt 0) {
-            $marketsToAdd = @($settings | Where-Object { $_.ShouldAllocate -and $_.BaseCurrency -eq $baseCurrency } | Select-Object -First $availableMarketSlots)
-            $marketsToEnable += $marketsToAdd
-            $availableMarketSlots -= $marketsToAdd.Count
-        } else {
-            Write-Warning "No more slots available"
+                $availableMarketSlots--
+                if ($availableMarketSlots -eq 0) {
+                    break;
+                }
+            }
         }
+    } else {
+        Write-Warning "No more slots available"
     }
 
     # Enable the markets we want to enable and set the predefined settings for that particular market.
