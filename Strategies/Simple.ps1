@@ -42,7 +42,7 @@
             }
             elseif ($pctChangeFromATH -le -25) {
                 if ($bagPct -le 50) {
-                    $bemPct = 2
+                    $bemPct = 1
                     $TrailingBuy = $false
                 } else {
                     $bemPct = 0
