@@ -86,7 +86,8 @@ function Run-ConfigureGSMG($Settings) {
         $trailingBuy = $setting.TrailingBuy
    
         if ($shouldAlloc) {
-            $allocPct = [Math]::Floor(100 / $allocationCount[$baseCurrency])
+            $marketCountToAllocate = @($Settings | Where-Object { $_.basecurrency -eq $baseCurrency -and $_.ShouldAllocate }).Count
+            $allocPct = [Math]::Floor(100 / $marketCountToAllocate)
         } else {
             $allocPct = 0
         }
