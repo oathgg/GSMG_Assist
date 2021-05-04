@@ -33,30 +33,29 @@
             if ($pctChangeFromATH -le -35) {
                 if ($bagPct -le 70) {
                     $bemPct = 2
+                    $TrailingBuy = $false
                 } else {
                     $bemPct = 0
                 }
-                $TrailingBuy = $false
                 $minProfitPct = 15
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -25) {
                 if ($bagPct -le 50) {
                     $bemPct = 2
+                    $TrailingBuy = $false
                 } else {
                     $bemPct = 0
-                    $TrailingBuy = $false
                 }
-                $bemPct = 0
                 $minProfitPct = 10
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -15) {
                 if ($bagPct -le 30) {
                     $bemPct = 0
+                    $TrailingBuy = $false
                 } else {
                     $bemPct = -2
-                    $TrailingBuy = $false
                 }
                 $minProfitPct = 5
                 $shouldAllocate = $true
@@ -66,7 +65,6 @@
                     $bemPct = -2
                     $minProfitPct = 1
                     $shouldAllocate = $true
-                    $TrailingBuy = $false # Maybe turn on?
                 }
             }
         }
