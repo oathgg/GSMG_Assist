@@ -74,7 +74,7 @@ function Run-ConfigureGSMG($Settings) {
     }
 
     # Calculates the amount of markets we want to enable so we don't cross the max market count
-    $marketsToEnable = $null
+    $marketsToEnable = @()
     $availableMarketSlots = (Get-GSMGSubscription).max_markets_across_exchanges
     foreach ($baseCurrency in $global:MaxAllocationPct.Keys) {
         $availableMarketSlots -= $forcedActiveMarketsCount[$baseCurrency]
@@ -108,7 +108,7 @@ function Run-ConfigureGSMG($Settings) {
             $allocPct = $global:MaxAllocationPct[$baseCurrency]
         }
 
-        if ($shouldAlloc -and -not $allocationActive) {
+        if ($shouldAlloc -and (-not $allocationActive -or $allocationActive.current_alloc -ne $allocPct)) {
             Set-GMSGMarketStatus -Market $marketName -Enable $True
         }
 
