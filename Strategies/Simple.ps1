@@ -4,12 +4,18 @@
 
     foreach ($marketName in ($global:MarketsToScan | Sort-Object)) {
         [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1h" -CandleLimit 720 -IncludeCurrentCandle
+        #[float] $pctChangeFromATH = Get-PreviousHighFromCandles -Market $marketName -Interval "1h" -CandleLimit 720 -IncludeCurrentCandle
+        
         [float] $pctChange24h = (Get-24hTicker($marketName)).priceChangePercent
         $market = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
         $allocation = $Global:GSMGAllocations | Where-Object { $_.market_name -match $marketName }
 
         if ($allocation) {
-            $bagPct = [float] [Math]::Round(($allocation.open_sells_alloc_perc / $allocation.current_alloc) * 100, 1)
+            if ($allocation.set_alloc_perc -gt 0) {
+                $bagPct = [float] [Math]::Round(($allocation.open_sells_alloc_perc / $allocation.set_alloc_perc) * 100, 1)
+            } else {
+                $bagPct = [float] [Math]::Round(($allocation.open_sells_alloc_perc / $allocation.current_alloc) * 100, 1)
+            }
             if ([Double]::IsNaN($bagPct)) {
                 $bagPct = 0
             }
@@ -22,6 +28,7 @@
         $bemPct = "-15"
         $aggressivenessPct = "10"
         $shouldAllocate = $false
+        $TrailingBuy = $false
 
         if ($addDefault) {
             $Settings += New-ConfigurationObject -BemPct $bemPct -AggressivenessPct $aggressivenessPct -ShouldAllocate $shouldAllocate -BaseCurrency "" -MarketName "DEFAULT" -MinProfitPct $minProfitPct
@@ -52,24 +59,26 @@
                 } else {
                     $bemPct = 0
                 }
+                $TrailingBuy = $true
                 $minProfitPct = 5
                 $shouldAllocate = $true
             }
             # -15 might be too aggressive
-            elseif ($pctChangeFromATH -le -15) {
+            <#elseif ($pctChangeFromATH -le -15) {
                 if ($bagPct -lt 10) {
                     $bemPct = 0
                     $minProfitPct = 1
                     $shouldAllocate = $true
+                    $TrailingBuy = $true
                 }
-            } 
+            } #>
         }
 
         if ($shouldAllocate) {
-            Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct, MPROFIT: $minProfitPct"
+            Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct, MPROFIT: $minProfitPct, TB: $TrailingBuy"
         }
 
-        $Settings += New-ConfigurationObject -BemPct $bemPct -AggressivenessPct $aggressivenessPct -ShouldAllocate $shouldAllocate -BaseCurrency $market.base_currency -MarketName $marketName -MinProfitPct $minProfitPct
+        $Settings += New-ConfigurationObject -BemPct $bemPct -AggressivenessPct $aggressivenessPct -ShouldAllocate $shouldAllocate -BaseCurrency $market.base_currency -MarketName $marketName -MinProfitPct $minProfitPct -TrailingBuy $TrailingBuy
     }
 
     return $Settings

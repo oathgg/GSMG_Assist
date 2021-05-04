@@ -86,7 +86,7 @@ function Get-GSMGSubscription() {
 }
 
 #PATCH /api/v1/markets/Binance:CAKEBUSD HTTP/1.1
-function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPct) {
+function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPct, $TrailingBuy) {
     $uri = "$script:baseUri/api/v1/markets/Binance:$Market"
 
     $hashSet = @{}
@@ -96,6 +96,13 @@ function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPc
     }
     if ($null -ne $AggressivenessPct) {
         $hashSet += @{"aggressiveness_pct"=$AggressivenessPct}
+    }
+    if ($null -ne $TrailingBuy) {
+        if ($TrailingBuy) {
+            $hashSet += @{"do_trsl_buy"=2}
+        } else {
+            $hashSet += @{"do_trsl_buy"=0}
+        }
     }
     if ($null -ne $MinTradeProfitPct) {
         $hashSet += @{"track_mtp_pct"=$False}
@@ -124,7 +131,7 @@ function Get-GSMGMarkets() {
 
 function Set-GMSGMarketAllocation($Market, $AllocationPct) {
     $uri = "$script:baseUri/api/v1/markets/Binance:$Market/percent/$AllocationPct"
-    Invoke-GSMGRequest -Uri $Uri -Method Put -RequiresToken
+    Invoke-GSMGRequest -Uri $Uri -Method Put -RequiresToken | Out-Null
     #Write-Host "[$Market] -> Allocation: $AllocationPct"
 }
 
@@ -133,6 +140,6 @@ function Set-GMSGMarketStatus($Market, $Enabled) {
 
     $body = ConvertTo-GSMGMessage -Hashset @{"enabled"=$Enabled}
 
-    Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken
+    Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken | Out-Null
     #Write-Host "[$Market] -> Enabled: $Enabled"
 }

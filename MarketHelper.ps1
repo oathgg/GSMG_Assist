@@ -1,11 +1,12 @@
-﻿function New-ConfigurationObject($BemPct, $AggressivenessPct, $ShouldAllocate, $BaseCurrency, $MarketName, $MinProfitPct) {
+﻿function New-ConfigurationObject($BemPct, $AggressivenessPct, $ShouldAllocate, $BaseCurrency, $MarketName, $MinProfitPct, $TrailingBuy) {
     $Settings = New-Object PSObject -Property @{ 
-        MarketName=$MarketName;
-        BemPCT=$BemPct; 
-        AggressivenessPct=$AggressivenessPct; 
-        ShouldAllocate=$ShouldAllocate; 
-        BaseCurrency=$BaseCurrency; 
+        MarketName=$MarketName
+        BemPCT=$BemPct
+        AggressivenessPct=$AggressivenessPct
+        ShouldAllocate=$ShouldAllocate
+        BaseCurrency=$BaseCurrency 
         MinProfitPct=$MinProfitPct
+        TrailingBuy=$TrailingBuy
     }
     return $Settings
 }
@@ -56,11 +57,12 @@ function Run-ConfigureGSMG($Settings) {
         if (-not $allocationActive -or ($allocationActive -and $allocationActive.managed_value_usd -lt 1)) {
             Set-GMSGMarketStatus -Market $marketName -Enabled $False
         } else {
-            $Setting = $Settings | Where-Object { $_.MarketName -eq "DEFAULT" }
-            $newBem = $Setting.BemPCT
-            $newAgg = $Setting.AggressivenessPct
-            $minProfitPct = $setting.MinProfitPct
-            Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $minProfitPct
+            $defaultSettings = $Settings | Where-Object { $_.MarketName -eq "DEFAULT" }
+            $newBem = $defaultSettings.BemPCT
+            $newAgg = $defaultSettings.AggressivenessPct
+            $minProfitPct = $defaultSettings.MinProfitPct
+            $trailingBuy = $defaultSettings.TrailingBuy
+            Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $minProfitPct -TrailingBuy $trailingBuy
             $forcedActiveMarketsCount[$baseCurrency]++
         }
 
@@ -94,6 +96,7 @@ function Run-ConfigureGSMG($Settings) {
         $shouldAlloc = $Setting.ShouldAllocate
         $minProfitPct = $setting.MinProfitPct
         $baseCurrency = $setting.BaseCurrency
+        $trailingBuy = $setting.TrailingBuy
    
         if ($shouldAlloc) {
             $allocPct = [Math]::Floor(100 / $allocationCount[$baseCurrency])
@@ -114,8 +117,8 @@ function Run-ConfigureGSMG($Settings) {
             Set-GMSGMarketAllocation -Market $marketName -AllocationPct $allocPct
         }
 
-        if ($curMarket.bem_pct -ne $newBem -or $curMarket.aggressiveness_pct -ne $newAgg -or $curMarket.min_trade_profit_pct -ne $minProfitPct) {
-            Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $minProfitPct
-        }
+        #if ($curMarket.bem_pct -ne $newBem -or $curMarket.aggressiveness_pct -ne $newAgg -or $curMarket.min_trade_profit_pct -ne $minProfitPct) {
+            Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $minProfitPct -TrailingBuy $trailingBuy
+        #}
     }
 }
