@@ -12,25 +12,6 @@
 }
 
 function Run-ConfigureGSMG($Settings) {
-    # Defines how many allocations we need for the specified market
-    # { 
-    #     BUSD = 8,
-    #     BTC = 1
-    # }
-    $allocationCount = @{}
-    foreach ($setting in $settings) {
-        $shouldAllocate = $Setting.ShouldAllocate
-        $baseCurrency = $Setting.BaseCurrency;
-
-        if (-not $allocationCount.ContainsKey($baseCurrency)) {
-            $allocationCount.Add($baseCurrency, 0);
-        }
-
-        if ($shouldAllocate) {
-            $allocationCount[$baseCurrency]++;
-        }
-    }
-
     # Enables and disables markets which are no longer applicable.
     # We keep track of the amount of markets which we want to disable but we cant,
     # A reason why we can't would be because we still have open sell orders.
@@ -43,7 +24,7 @@ function Run-ConfigureGSMG($Settings) {
         }
     }
 
-    $forcedActiveMarkets = @()
+    $marketsToUpdate = @()
     foreach ($marketName in $marketsToDisable) {
         $curMarket = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
         $allocationActive = $Global:GSMGAllocations | Where-Object { $_.market_name -match $marketName }
@@ -62,7 +43,7 @@ function Run-ConfigureGSMG($Settings) {
             $trailingBuy = $defaultSettings.TrailingBuy
             Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $minProfitPct -TrailingBuy $trailingBuy
             
-            $forcedActiveMarkets += $marketname
+            $marketsToUpdate += $settings | Where-Object { $_.Marketname -eq $marketname }
             Write-Warning "[$marketname] Cannot disable market, managed value : $($allocationActive.managed_value_usd)"
         }
 
@@ -75,12 +56,11 @@ function Run-ConfigureGSMG($Settings) {
 
     # Calculates the amount of markets we want to enable so we don't cross the max market count
     $availableMarketSlots = (Get-GSMGSubscription).max_markets_across_exchanges
-    $availableMarketSlots -= $forcedActiveMarkets.Count
-    $marketsToEnable = @()
+    $availableMarketSlots -= $marketsToUpdate.Count
     if ($availableMarketSlots -gt 0) {
         foreach ($marketToAdd in $settings | Where-Object { $_.ShouldAllocate }) {
-            if ($forcedActiveMarkets -notcontains $marketToAdd.MarketName) {
-                $marketsToEnable += $marketToAdd
+            if ($marketsToUpdate -notcontains $marketToAdd.MarketName) {
+                $marketsToUpdate += $marketToAdd
 
                 $availableMarketSlots--
                 if ($availableMarketSlots -eq 0) {
@@ -93,7 +73,7 @@ function Run-ConfigureGSMG($Settings) {
     }
 
     # Enable the markets we want to enable and set the predefined settings for that particular market.
-    foreach ($setting in $marketsToEnable) {
+    foreach ($setting in $marketsToUpdate) {
         $marketName = $setting.MarketName
         $curMarket = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
         $allocationActive = $Global:GSMGAllocations | Where-Object { $_.market_name -match $marketName }
