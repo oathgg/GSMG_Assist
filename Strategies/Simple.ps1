@@ -28,10 +28,10 @@
 
         # Market is reversing after a downtrend
         # We do not want to spend money when the market has been going up too fast
-        if ($pctChange24h -gt -5 -and $pctChange24h -lt 10)
+        if ($pctChange24h -gt -5 -and $pctChange24h -lt 15)
         {
             if ($pctChangeFromATH -le -35) {
-                if ($bagPct -le 60) {
+                if ($bagPct -le 70) {
                     $bemPct = 2
                 } else {
                     $bemPct = 0
@@ -41,7 +41,7 @@
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -25) {
-                if ($bagPct -le 40) {
+                if ($bagPct -le 50) {
                     $bemPct = 2
                 } else {
                     $bemPct = 0
@@ -52,7 +52,7 @@
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -15) {
-                if ($bagPct -le 20) {
+                if ($bagPct -le 30) {
                     $bemPct = 0
                 } else {
                     $bemPct = -2
@@ -60,6 +60,14 @@
                 }
                 $minProfitPct = 5
                 $shouldAllocate = $true
+            } else {
+                # So we keep buying in an uptrend, bem is quite defensive,
+                if ($bagPct -le 15) {
+                    $bemPct = -2
+                    $minProfitPct = 1
+                    $shouldAllocate = $true
+                    $TrailingBuy = $false # Maybe turn on?
+                }
             }
         }
 
