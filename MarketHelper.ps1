@@ -56,7 +56,9 @@ function Run-ConfigureGSMG($Settings) {
         # The amount of money we still have open in the coin
         if (-not $allocationActive -or ($allocationActive -and $allocationActive.managed_value_usd -lt 1)) {
             Set-GMSGMarketStatus -Market $marketName -Enabled $False
-        } else {
+        } 
+        # We cannot disable this market because there is still too much money in it
+        else {
             $defaultSettings = $Settings | Where-Object { $_.MarketName -eq "DEFAULT" }
             $newBem = $defaultSettings.BemPCT
             $newAgg = $defaultSettings.AggressivenessPct
@@ -64,6 +66,8 @@ function Run-ConfigureGSMG($Settings) {
             $trailingBuy = $defaultSettings.TrailingBuy
             Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $minProfitPct -TrailingBuy $trailingBuy
             $forcedActiveMarketsCount[$baseCurrency]++
+
+            Write-Warning "[$marketname] Cannot disable market, managed value : $($allocationActive.managed_value_usd)"
         }
 
         # Make sure we dont have any allocation left when we disable the market
