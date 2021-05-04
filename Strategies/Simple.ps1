@@ -90,8 +90,8 @@
             # Might be too aggressive
             elseif ($pctChangeFromATH -le -10) {
                 if ($bagPct -lt 10) {
-                    $bemPct = -2
-                    $minProfitPct = 1
+                    $bemPct = 0
+                    $minProfitPct = 3
                     $shouldAllocate = $true
                 }
             }
