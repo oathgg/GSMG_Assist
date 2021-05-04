@@ -12,14 +12,25 @@
         $allocation = $Global:GSMGAllocations | Where-Object { $_.market_name -match $marketName }
 
         if ($allocation) {
-            $allocatedBagPct = 0
+            $bagPct = 0
+
+            # The bag pct based on our allocation pct which we have set
+            $setAllocBagPct = 0
             if ($allocation.set_alloc_perc -gt 0) {
-                $allocatedBagPct = [float] [Math]::Round(($allocation.open_sells_alloc_perc / $allocation.set_alloc_perc) * 100, 1)
+                $setAllocBagPct = [float] [Math]::Round(($allocation.open_sells_alloc_perc / $allocation.set_alloc_perc) * 100, 1)
             } 
 
-            $bagPct = [float] [Math]::Round(($allocation.open_sells_alloc_perc / $allocation.current_alloc) * 100, 1)
-            if ($allocatedBagPct -gt $bagPct) {
-                $bagPct = $allocatedBagPct
+            # The bag % based on our currently allocated amount
+            $currentlyAllocatedBagPct = 0
+            if ($allocation.current_alloc -gt 1) {
+                $currentlyAllocatedBagPct = [float] [Math]::Round(($allocation.open_sells_alloc_perc / $allocation.current_alloc) * 100, 1)
+            }
+
+            # Check which one is the highest
+            if ($setAllocBagPct -gt $currentlyAllocatedBagPct) {
+                $bagPct = $setAllocBagPct
+            } else {
+                $bagPct = $currentlyAllocatedBagPct
             }
 
             if ([Double]::IsNaN($bagPct)) {
