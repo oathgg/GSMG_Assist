@@ -46,10 +46,10 @@
         if ($pctChange24h -gt -5 -and $pctChange24h -lt 10)
         {
             if ($pctChangeFromATH -le -40) {
-                if ($bagPct -lt 60) {
-                    $bemPct = 2
+                if ($bagPct -gt 60) {
+                    $bemPct = -4
                 } else {
-                    $bemPct = 0
+                    $bemPct = 2
                 }
                 $TrailingBuy = $false
                 $minProfitPct = 15
@@ -59,7 +59,7 @@
                 if ($bagPct -gt 40) {
                     $bemPct = -4
                 } else {
-                    $bemPct = 0
+                    $bemPct = 2
                     $TrailingBuy = $false
                 }
                 $bemPct = 0
@@ -76,7 +76,7 @@
                 $minProfitPct = 5
                 $shouldAllocate = $true
             }
-            # -15 might be too aggressive
+            # Might be too aggressive
             elseif ($pctChangeFromATH -le -10) {
                 if ($bagPct -lt 10) {
                     $bemPct = -2
