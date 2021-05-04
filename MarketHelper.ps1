@@ -36,7 +36,8 @@ function Run-ConfigureGSMG($Settings) {
     $marketsToDisable = @()
     foreach ($activeAllocation in $Global:GSMGAllocations) {
         $activeMarketName = $activeAllocation.Market_Name.Replace("Binance:", "")
-        if ($settings.MarketName -notcontains $activeMarketName) {
+        $settingsMarket = $settings | Where-Object { $_.MarketName -eq $activeMarketName }
+        if (-not $settingsMarket.ShouldAllocate) {
             $marketsToDisable += $activeMarketName
         }
     }
