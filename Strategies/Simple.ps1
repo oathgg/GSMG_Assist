@@ -28,10 +28,10 @@
 
         # Market is reversing after a downtrend
         # We do not want to spend money when the market has been going up too fast
-        if ($pctChange24h -gt -5 -and $pctChange24h -lt 15)
+        if ($pctChange24h -gt -10 -and $pctChange24h -lt 15)
         {
             if ($pctChangeFromATH -le -35) {
-                if ($bagPct -le 70) {
+                if ($bagPct -le 60) {
                     $bemPct = 2
                     $TrailingBuy = $false
                 } else {
@@ -41,7 +41,7 @@
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -25) {
-                if ($bagPct -le 40) {
+                if ($bagPct -le 30) {
                     $bemPct = 1
                     $TrailingBuy = $false
                 } else {
