@@ -83,10 +83,13 @@ function Run-ConfigureGSMG($Settings) {
     foreach ($baseCurrency in $global:MaxAllocationPct.Keys) {
         $availableMarketSlots -= $forcedActiveMarketsCount[$baseCurrency]
 
-        $marketsToAdd = $settings | Where-Object { $_.ShouldAllocate -and $_.BaseCurrency -eq $baseCurrency } | Select-Object -First $availableMarketSlots
-        $marketsToEnable += $marketsToAdd
-
-        $availableMarketSlots -= $marketsToAdd.Count
+        if ($availableMarketSlots -gt 0) {
+            $marketsToAdd = @($settings | Where-Object { $_.ShouldAllocate -and $_.BaseCurrency -eq $baseCurrency } | Select-Object -First $availableMarketSlots)
+            $marketsToEnable += $marketsToAdd
+            $availableMarketSlots -= $marketsToAdd.Count
+        } else {
+            Write-Warning "No more slots available"
+        }
     }
 
     # Enable the markets we want to enable and set the predefined settings for that particular market.
