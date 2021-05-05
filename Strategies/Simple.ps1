@@ -1,7 +1,7 @@
 ﻿function Run-Strategy() {
     $Settings = @();
-    $marketsToScan = $Global:GSMGAllocations.Market_name.Replace("Binance:", "")
-    foreach ($marketName in $marketsToScan) {
+    $marketsToScan = $Global:GSMGmarkets | ? { $_.Enabled }
+    foreach ($marketName in $marketsToScan.market_name) {
         [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1d" -CandleLimit 30 -IncludeCurrentCandle
         [float] $pctChange24h = (Get-24hTicker($marketName)).priceChangePercent
 
