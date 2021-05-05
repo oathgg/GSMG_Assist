@@ -14,6 +14,12 @@
                 $bagPct = [float] [Math]::Round(($allocation.open_sells_alloc_perc / $allocation.set_alloc_perc) * 100, 1)
             } else {
                 $bagPct = [float] [Math]::Round(($allocation.open_sells_alloc_perc / $allocation.current_alloc) * 100, 1)
+                
+                # When we have stepped out of the market it means all the money in that market is going to be a bag...
+                # So we check the bag space by comparing it to our max allocation on this base currency.
+                if ($bagPct -eq 100) {
+                    $bagPct = [float] [Math]::Round(($allocation.open_sells_alloc_perc / $global:MaxAllocationPct[$market.base_currency]) * 100, 1)
+                }
             }
         } else {
             $bagPct = 0
