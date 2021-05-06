@@ -66,7 +66,6 @@
                 $minProfitPct = 5
                 $shouldAllocate = $true
             } elseif ($pctChangeFromATH -le -5) {
-                # So we keep buying in an uptrend, bem is quite defensive, Trailing buy is on by default... How desperate..
                 if ($bagPct -le 10) {
                     $bemPct = 0
                     $minProfitPct = 3
