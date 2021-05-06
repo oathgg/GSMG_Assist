@@ -43,7 +43,7 @@
                 } else {
                     $bemPct = 0
                 }
-                $minProfitPct = 15
+                $minProfitPct = 20
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -25) {
@@ -53,7 +53,7 @@
                 } else {
                     $bemPct = 0
                 }
-                $minProfitPct = 10
+                $minProfitPct = 15
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -15) {
@@ -63,12 +63,12 @@
                 } else {
                     $bemPct = -2
                 }
-                $minProfitPct = 5
+                $minProfitPct = 10
                 $shouldAllocate = $true
             } elseif ($pctChangeFromATH -le -5) {
                 if ($bagPct -le 10) {
-                    $bemPct = 0
-                    $minProfitPct = 3
+                    $bemPct = -1
+                    $minProfitPct = 5
                     $shouldAllocate = $true
                 }
             } else {
