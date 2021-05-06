@@ -28,7 +28,7 @@
         # Default settings
         $minProfitPct = 5;
         $bemPct = "-15"
-        $aggressivenessPct = "15"
+        $aggressivenessPct = "20"
         $shouldAllocate = $false
         $TrailingBuy = $true
 
@@ -38,17 +38,7 @@
         {
             if ($pctChangeFromATH -le -35) {
                 if ($bagPct -le 60) {
-                    $bemPct = 2
-                    $TrailingBuy = $false
-                } else {
-                    $bemPct = 0
-                }
-                $minProfitPct = 30
-                $shouldAllocate = $true
-            }
-            elseif ($pctChangeFromATH -le -25) {
-                if ($bagPct -le 30) {
-                    $bemPct = 1
+                    $bemPct = 4
                     $TrailingBuy = $false
                 } else {
                     $bemPct = 0
@@ -56,12 +46,22 @@
                 $minProfitPct = 20
                 $shouldAllocate = $true
             }
-            elseif ($pctChangeFromATH -le -15) {
-                if ($bagPct -le 20) {
-                    $bemPct = 0
+            elseif ($pctChangeFromATH -le -25) {
+                if ($bagPct -le 30) {
+                    $bemPct = 2
                     $TrailingBuy = $false
                 } else {
-                    $bemPct = -2
+                    $bemPct = 0
+                }
+                $minProfitPct = 15
+                $shouldAllocate = $true
+            }
+            elseif ($pctChangeFromATH -le -15) {
+                if ($bagPct -le 20) {
+                    $bemPct = 1
+                    $TrailingBuy = $false
+                } else {
+                    $bemPct = 0
                 }
                 $minProfitPct = 10
                 $shouldAllocate = $true
@@ -75,7 +75,7 @@
                 # So we keep buying in an uptrend, bem is quite defensive, Trailing buy is on by default... How desperate..
                 if ($bagPct -le 10) {
                     $bemPct = -2
-                    $minProfitPct = 3
+                    $minProfitPct = 1
                     $shouldAllocate = $true
                 }
             }
