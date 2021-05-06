@@ -69,7 +69,7 @@
                 # So we keep buying in an uptrend, bem is quite defensive, Trailing buy is on by default... How desperate..
                 if ($bagPct -le 10) {
                     $bemPct = -2
-                    $minProfitPct = 5
+                    $minProfitPct = 3
                     $shouldAllocate = $true
                 }
             }
