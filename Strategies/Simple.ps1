@@ -56,7 +56,7 @@
                 } else {
                     $bemPct = 0
                 }
-                $minProfitPct = 15
+                $minProfitPct = 12
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -15) {
@@ -66,20 +66,13 @@
                 $bemPct = 0
                 $minProfitPct = 10
                 $shouldAllocate = $true
-            } elseif ($pctChangeFromATH -le -5) {
+            } elseif ($pctChangeFromATH -le -10) {
                 if ($bagPct -le 10) {
                     $bemPct = 0
                     $minProfitPct = 5
                     $shouldAllocate = $true
                 }
-            } else {
-                # So we keep buying in an uptrend, bem is quite defensive, Trailing buy is on by default... How desperate..
-                <#if ($bagPct -le 10) {
-                    $bemPct = -7
-                    $minProfitPct = 1
-                    $shouldAllocate = $true
-                }#>
-            }
+            } 
         }
 
         if ($shouldAllocate) {
