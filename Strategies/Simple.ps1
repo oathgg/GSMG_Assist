@@ -26,7 +26,10 @@
         }
 
         # Default settings
-        $minProfitPct = 15;
+        $minProfitPct = [Math]::Round($pctChangeFromATH * -1)
+        if ($minProfitPct -lt 1) {
+            $minProfitPct = 1
+        }
         $bemPct = "-15"
         $aggressivenessPct = "20"
         $shouldAllocate = $false
@@ -72,7 +75,7 @@
             } else {
                 # So we keep buying in an uptrend, bem is quite defensive, Trailing buy is on by default... How desperate..
                 if ($bagPct -le 10) {
-                    $bemPct = -4
+                    $bemPct = -7
                     $minProfitPct = 1
                     $shouldAllocate = $true
                 }
