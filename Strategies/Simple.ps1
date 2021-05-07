@@ -46,7 +46,7 @@
                 } else {
                     $bemPct = 0
                 }
-                $minProfitPct = 15
+                $minProfitPct = 12
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -25) {
@@ -56,7 +56,7 @@
                 } else {
                     $bemPct = 0
                 }
-                $minProfitPct = 12
+                $minProfitPct = 9
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -15) {
@@ -64,12 +64,12 @@
                     $TrailingBuy = $false
                 }
                 $bemPct = 0
-                $minProfitPct = 10
+                $minProfitPct = 7
                 $shouldAllocate = $true
             } elseif ($pctChangeFromATH -le -10) {
                 if ($bagPct -le 10) {
                     $bemPct = -3
-                    $minProfitPct = 5
+                    $minProfitPct = 3
                     $shouldAllocate = $true
                 }
             } 
