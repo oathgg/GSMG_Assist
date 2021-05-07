@@ -37,7 +37,7 @@
         if ($pctChange24h -gt -10 -and $pctChange24h -lt 15)
         {
             if ($pctChangeFromATH -le -35) {
-                if ($bagPct -le 60) {
+                if ($bagPct -le 50) {
                     $bemPct = 2
                     $TrailingBuy = $false
                 } else {
