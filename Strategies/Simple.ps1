@@ -46,7 +46,7 @@
                 } else {
                     $bemPct = 0
                 }
-                $minProfitPct = 10
+                $minProfitPct = 7
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -25) {
@@ -56,7 +56,7 @@
                 } else {
                     $bemPct = 0
                 }
-                $minProfitPct = 7
+                $minProfitPct = 5
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -15) {
