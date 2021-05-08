@@ -31,7 +31,7 @@
             $minProfitPct = 1
         }
         $bemPct = "-15"
-        $aggressivenessPct = "20"
+        $aggressivenessPct = "25"
         $shouldAllocate = $false
         $TrailingBuy = $true
 
