@@ -35,6 +35,8 @@
         if ($pctChangeFromATH -le -35) {
             if ($bagPct -le 50) {
                 $TrailingBuy = $false
+            } else {
+                $bemPct = -5
             }
             $bemPct = 0
             $minProfitPct = 5
@@ -43,6 +45,8 @@
         elseif ($pctChangeFromATH -le -25) {
             if ($bagPct -le 25) {
                 $TrailingBuy = $false
+            } else {
+                $bemPct = -5
             }
             $bemPct = 0
             $minProfitPct = 5
@@ -51,6 +55,8 @@
         elseif ($pctChangeFromATH -le -15) {
             if ($bagPct -le 20) {
                 $TrailingBuy = $false
+            } else {
+                $bemPct = -5
             }
             $bemPct = 0
             $minProfitPct = 5
