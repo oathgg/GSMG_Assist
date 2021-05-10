@@ -59,9 +59,10 @@
                 $bemPct = 0
                 $minProfitPct = 5
                 $shouldAllocate = $true
-            } elseif ($pctChangeFromATH -le -10) {
+            } else {
                 if ($bagPct -le 10) {
-                    $bemPct = -3
+                    $TrailingBuy = $false
+                    $bemPct = 0
                     $minProfitPct = 1
                     $shouldAllocate = $true
                 }
