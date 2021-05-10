@@ -47,7 +47,7 @@
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -25) {
-                if ($bagPct -le 30) {
+                if ($bagPct -le 25) {
                     $bemPct = 1
                     $TrailingBuy = $false
                 } else {
