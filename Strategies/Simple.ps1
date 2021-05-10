@@ -34,7 +34,7 @@
 
         # Market is reversing after a downtrend
         # We do not want to spend money when the market has been going up too fast
-        if ($pctChange24h -gt -10 -and $pctChange24h -lt 10)
+        if ($pctChange24h -gt -10 -and $pctChange24h -lt 15)
         {
             if ($pctChangeFromATH -le -35) {
                 if ($bagPct -le 50) {
