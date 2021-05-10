@@ -4,7 +4,7 @@
 . "$curPath\Functions\Tools.ps1"
 . "$curPath\parameters.ps1"
 
-cls
+Clear-Host
 $markets = Get-GSMGMarkets
 $profitableMarkets = $markets | Where-Object {$_.exchange_comments -ne "BREAK" -and $_.base_currency -match "BUSD" -and $_.market_knowledge_b.mtp_pct -gt 5 } | Sort-Object {$_.market_knowledge_b.mtp_pct} -Descending 
 $count = 0
