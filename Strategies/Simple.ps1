@@ -38,21 +38,17 @@
         {
             if ($pctChangeFromATH -le -35) {
                 if ($bagPct -le 50) {
-                    #$bemPct = 2
                     $TrailingBuy = $false
-                } else {
-                    $bemPct = 0
                 }
+                $bemPct = 0
                 $minProfitPct = 5
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -25) {
                 if ($bagPct -le 25) {
-                    #$bemPct = 1
                     $TrailingBuy = $false
-                } else {
-                    $bemPct = 0
                 }
+                $bemPct = 0
                 $minProfitPct = 5
                 $shouldAllocate = $true
             }
