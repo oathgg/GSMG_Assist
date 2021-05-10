@@ -26,10 +26,7 @@
         }
 
         # Default settings
-        $minProfitPct = [Math]::Round($pctChangeFromATH * -1)
-        if ($minProfitPct -lt 1) {
-            $minProfitPct = 1
-        }
+        $minProfitPct = 1
         $bemPct = "-15"
         $aggressivenessPct = "25"
         $shouldAllocate = $false
@@ -46,7 +43,7 @@
                 } else {
                     $bemPct = 0
                 }
-                $minProfitPct = 7
+                $minProfitPct = 5
                 $shouldAllocate = $true
             }
             elseif ($pctChangeFromATH -le -25) {
@@ -69,7 +66,7 @@
             } elseif ($pctChangeFromATH -le -10) {
                 if ($bagPct -le 10) {
                     $bemPct = -3
-                    $minProfitPct = 3
+                    $minProfitPct = 1
                     $shouldAllocate = $true
                 }
             } 
