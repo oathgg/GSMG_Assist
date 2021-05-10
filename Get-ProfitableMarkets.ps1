@@ -15,7 +15,7 @@ foreach ($pm in $profitableMarkets) {
 
     if ($pctChange24h -gt -10 -and $pctChange24h -lt 15) {
         [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1d" -CandleLimit 30 -IncludeCurrentCandle
-        if ($pctChangeFromATH -le -20) {
+        if ($pctChangeFromATH -le -15) {
             $count++
             $pm | Select-Object Market_name, market_knowledge_b
         }

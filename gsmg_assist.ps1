@@ -34,8 +34,8 @@ while ($true) {
         . $strategyPath
     }
 
-    $Global:GSMGmarkets = Get-GSMGMarkets
-    $Global:GSMGAllocations = Get-GSMGMarketAllocations  
+    $Global:GSMGmarkets = Get-GSMGMarkets | Where-Object { $_.market_name -notcontains $global:MarketsToIgnore }
+    $Global:GSMGAllocations = Get-GSMGMarketAllocations | Where-Object { $_.market_name.Replace("Binance:", "") -notcontains $global:MarketsToIgnore }
 
     Clear-Host
 
