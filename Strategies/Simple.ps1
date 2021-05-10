@@ -61,9 +61,8 @@
                 $shouldAllocate = $true
             } else {
                 if ($bagPct -le 10) {
-                    $TrailingBuy = $false
                     $bemPct = 0
-                    $minProfitPct = 1
+                    $minProfitPct = 3
                     $shouldAllocate = $true
                 }
             } 
