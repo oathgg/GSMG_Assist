@@ -62,7 +62,7 @@
             $minProfitPct = 5
             $shouldAllocate = $true
         } elseif ($bagPct -le 10) {
-            $bemPct = 0
+            $bemPct = -3
             $minProfitPct = 1
             $shouldAllocate = $true
         } 
