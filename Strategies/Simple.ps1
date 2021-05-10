@@ -32,41 +32,34 @@
         $shouldAllocate = $false
         $TrailingBuy = $true
 
-        # Market is reversing after a downtrend
-        # We do not want to spend money when the market has been going up too fast
-        if ($pctChange24h -gt -10 -and $pctChange24h -lt 15)
-        {
-            if ($pctChangeFromATH -le -35) {
-                if ($bagPct -le 50) {
-                    $TrailingBuy = $false
-                }
-                $bemPct = 0
-                $minProfitPct = 5
-                $shouldAllocate = $true
+        if ($pctChangeFromATH -le -35) {
+            if ($bagPct -le 50) {
+                $TrailingBuy = $false
             }
-            elseif ($pctChangeFromATH -le -25) {
-                if ($bagPct -le 25) {
-                    $TrailingBuy = $false
-                }
-                $bemPct = 0
-                $minProfitPct = 5
-                $shouldAllocate = $true
-            }
-            elseif ($pctChangeFromATH -le -15) {
-                if ($bagPct -le 20) {
-                    $TrailingBuy = $false
-                }
-                $bemPct = 0
-                $minProfitPct = 5
-                $shouldAllocate = $true
-            } else {
-                if ($bagPct -le 10) {
-                    $bemPct = 0
-                    $minProfitPct = 3
-                    $shouldAllocate = $true
-                }
-            } 
+            $bemPct = 0
+            $minProfitPct = 5
+            $shouldAllocate = $true
         }
+        elseif ($pctChangeFromATH -le -25) {
+            if ($bagPct -le 25) {
+                $TrailingBuy = $false
+            }
+            $bemPct = 0
+            $minProfitPct = 5
+            $shouldAllocate = $true
+        }
+        elseif ($pctChangeFromATH -le -15) {
+            if ($bagPct -le 20) {
+                $TrailingBuy = $false
+            }
+            $bemPct = 0
+            $minProfitPct = 5
+            $shouldAllocate = $true
+        } elseif ($bagPct -le 10) {
+            $bemPct = 0
+            $minProfitPct = 1
+            $shouldAllocate = $true
+        } 
 
         if ($shouldAllocate) {
             Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct, MPROFIT: $minProfitPct, TB: $TrailingBuy"
