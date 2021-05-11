@@ -26,46 +26,22 @@
         }
 
         # Default settings
-        $minProfitPct = 1
-        $bemPct = "-15"
-        $aggressivenessPct = "40"
-        $shouldAllocate = $false
-        $TrailingBuy = $true
+        $minProfitPct = 5
+        $bemPct = 0
+        $aggressivenessPct = 40
+        $shouldAllocate = $true
+        $TrailingBuy = $false
+        $minProfitPct = 5
 
-        if ($pctChangeFromATH -le -35) {
-            if ($bagPct -le 70) {
-                $TrailingBuy = $false
-                $bemPct = 0
-            } else {
-                $bemPct = -2
-            }
-            $minProfitPct = 5
-            $shouldAllocate = $true
-        }
-        elseif ($pctChangeFromATH -le -25) {
-            if ($bagPct -le 50) {
-                $TrailingBuy = $false
-                $bemPct = 0
-            } else {
-                $bemPct = -2
-            }
-            $minProfitPct = 5
-            $shouldAllocate = $true
-        }
-        elseif ($pctChangeFromATH -le -15) {
-            if ($bagPct -le 35) {
-                $TrailingBuy = $false
-                $bemPct = 0
-            } else {
-                $bemPct = -2
-            }
-            $minProfitPct = 5
-            $shouldAllocate = $true
-        } elseif ($bagPct -le 10) {
+        if ($pctChangeFromATH -le 10) {
             $bemPct = -3
+            $TrailingBuy = $true
             $minProfitPct = 1
-            $shouldAllocate = $true
-        } 
+        }
+
+        if ($bagPct -gt 50) {
+            $TrailingBuy = $true
+        }
 
         if ($shouldAllocate) {
             Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct, MPROFIT: $minProfitPct, TB: $TrailingBuy"
