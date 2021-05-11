@@ -37,7 +37,7 @@
                 $TrailingBuy = $false
                 $bemPct = 0
             } else {
-                $bemPct = -5
+                $bemPct = -3
             }
             $minProfitPct = 5
             $shouldAllocate = $true
@@ -47,7 +47,7 @@
                 $TrailingBuy = $false
                 $bemPct = 0
             } else {
-                $bemPct = -5
+                $bemPct = -3
             }
             $minProfitPct = 5
             $shouldAllocate = $true
@@ -57,7 +57,7 @@
                 $TrailingBuy = $false
                 $bemPct = 0
             } else {
-                $bemPct = -5
+                $bemPct = -3
             }
             $minProfitPct = 5
             $shouldAllocate = $true
