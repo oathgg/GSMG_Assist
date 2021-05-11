@@ -33,7 +33,7 @@
         $TrailingBuy = $false
         $minProfitPct = 5
 
-        if ($pctChangeFromATH -le 10) {
+        if ($pctChangeFromATH -gt 10) {
             $bemPct = -3
             $TrailingBuy = $true
             $minProfitPct = 1
