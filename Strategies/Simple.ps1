@@ -33,31 +33,31 @@
         $TrailingBuy = $true
 
         if ($pctChangeFromATH -le -35) {
-            if ($bagPct -le 50) {
+            if ($bagPct -le 70) {
                 $TrailingBuy = $false
                 $bemPct = 0
             } else {
-                $bemPct = -3
+                $bemPct = -2
             }
             $minProfitPct = 5
             $shouldAllocate = $true
         }
         elseif ($pctChangeFromATH -le -25) {
-            if ($bagPct -le 25) {
+            if ($bagPct -le 50) {
                 $TrailingBuy = $false
                 $bemPct = 0
             } else {
-                $bemPct = -3
+                $bemPct = -2
             }
             $minProfitPct = 5
             $shouldAllocate = $true
         }
         elseif ($pctChangeFromATH -le -15) {
-            if ($bagPct -le 20) {
+            if ($bagPct -le 35) {
                 $TrailingBuy = $false
                 $bemPct = 0
             } else {
-                $bemPct = -3
+                $bemPct = -2
             }
             $minProfitPct = 5
             $shouldAllocate = $true
