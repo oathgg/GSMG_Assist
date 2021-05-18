@@ -42,6 +42,14 @@
             $TrailingBuy = $true
         }
 
+        if ($pctChange24h -gt 15) {
+            $bemPct = -3
+        }
+
+        if ($pctChange24h -le -10) {
+            $TrailingBuy = $true
+        }
+
         if ($shouldAllocate) {
             Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct, MPROFIT: $minProfitPct, TB: $TrailingBuy"
         }
