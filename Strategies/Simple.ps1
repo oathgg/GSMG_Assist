@@ -52,7 +52,7 @@
         }
 
         if ($bagPct -gt 40) {
-            $minProfitPct = 2
+            $minProfitPct = 1
         }
 
         if ($shouldAllocate) {
