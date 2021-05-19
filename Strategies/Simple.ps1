@@ -50,6 +50,10 @@
             $TrailingBuy = $true
         }
 
+        if ($bagPct -gt 60) {
+            $minProfitPct = 1
+        }
+
         if ($shouldAllocate) {
             Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct, MPROFIT: $minProfitPct, TB: $TrailingBuy"
         }
