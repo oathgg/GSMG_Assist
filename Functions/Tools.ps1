@@ -6,18 +6,17 @@
         Write-Host "Generating Binance table..."
         foreach ($market in $pairs.Keys | Sort-Object) {
             $pair = $pairs.$market
-            if ($pair.TotalAmount -gt 1 -or $pair.Amount -gt 1) {
+            if ($pair.Coins -gt 0 -or $pair.Amount -gt 0) {
                 $marketName = $Market
                 if ($marketName -notmatch "USDT" -and $marketName -notmatch "BUSD") {
                     $marketName += "USDT" # Set a default market
                 }
 
-                $activeAmount = $pair.ActiveAmount
+                $coins = $pair.ActiveAmount
                 $total = $pair.Spent
-                $totalAmount = $pair.TotalAmount
                 $currentMarketPrice = (Get-MarketValue($marketName)).price
 
-                $text = "$market`t$($TotalAmount)`t$($activeAmount)`t$($Total)`t$($currentMarketPrice)"
+                $text = "$market`t$($activeAmount)`t$($Total)`t$($currentMarketPrice)"
                 if (-not [string]::IsNullOrEmpty($BinanceClipBoardText)) {
                     $BinanceClipBoardText += "`r`n"
                 }
