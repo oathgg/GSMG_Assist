@@ -33,13 +33,16 @@
         $TrailingBuy = $false
         $minProfitPct = 5
 
-        # When we're in an uptrend we only take small profits so we don't get bags that are too high up
+        # When we're in an uptrend we only take small profits so we don't buy too high
         if ($pctChangeFromATH -gt -10) {
             $TrailingBuy = $true
             $minProfitPct = 1
+            $bemPct = -1
         }
 
-        if ($pctChange24h -le -10) {
+        # When the market has been changing too fast
+        if ($pctChange24h -gt 15 -or $pctChange24h -le -10) {
+            $bemPct = -2
             $TrailingBuy = $true
         }
 
@@ -48,16 +51,10 @@
             $TrailingBuy = $true
             $minProfitPct = 3
         }
-
-        # When the market has been going up too fast we want to distance ourselves a bit
-        if ($pctChange24h -gt 15) {
-            $bemPct = -3
-            $TrailingBuy = $true
-        }
-
-        # If our bags are becoming too big we want to sell faster
         if ($bagPct -gt 40) {
-            $TrailingBuy = $true
+            $minProfitPct = 2
+        }
+        if ($bagPct -gt 50) {
             $minProfitPct = 1
         }
 
