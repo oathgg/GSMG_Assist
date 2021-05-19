@@ -12,7 +12,8 @@
 }
 
 function Run-ConfigureGSMG($Settings) {
-    # Enable the markets we want to enable and set the predefined settings for that particular market.
+    $lockedAllocations = Get-GSMGMarketAllocations | Where-Object { $_.set_alloc_perc -eq 0 -and $_.open_sells_alloc_perc -gt 0 }
+
     foreach ($setting in $Settings) {
         $marketName = $setting.MarketName
         $curMarket = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
@@ -27,7 +28,13 @@ function Run-ConfigureGSMG($Settings) {
    
         if ($shouldAlloc) {
             $marketCountToAllocate = @($Settings | Where-Object { $_.basecurrency -eq $baseCurrency -and $_.ShouldAllocate }).Count
-            $allocPct = [Math]::Floor(100 / $marketCountToAllocate)
+
+            # Enable the markets we want to enable and set the predefined settings for that particular market.
+            $totalAllocation = 100
+            $lockedAllocation = ($lockedAllocations | Where-Object { $_.base_currency -eq $baseCurrency } | Measure-Object -Sum open_sells_alloc_perc).Sum
+            $freeAlloc = $totalAllocation - $lockedAllocation
+
+            $allocPct = [Math]::Floor($freeAlloc / $marketCountToAllocate)
         } else {
             $allocPct = 0
         }
