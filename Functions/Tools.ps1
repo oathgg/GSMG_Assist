@@ -12,34 +12,33 @@
                     $marketName += "USDT" # Set a default market
                 }
 
-                $coins = $pair.ActiveAmount
+                $coins = $pair.Coins
                 $total = $pair.Spent
                 $currentMarketPrice = (Get-MarketValue($marketName)).price
 
-                $text = "$market`t$($activeAmount)`t$($Total)`t$($currentMarketPrice)"
+                $text = "$market`t$($coins)`t$($Total)`t$($currentMarketPrice)"
                 if (-not [string]::IsNullOrEmpty($BinanceClipBoardText)) {
                     $BinanceClipBoardText += "`r`n"
                 }
                 $BinanceClipBoardText += $text
 
                 if ($activeAmount -gt 0) {
-                    $profit = [float] $currentMarketPrice * [float] $ActiveAmount - [float] $total
+                    $profit = [float] $currentMarketPrice * [float] $coins - [float] $total
                     $profitPercentage = $profit / ($total / 100)
                 } else {
-                    $profit = [float] $currentMarketPrice * [float] $totalAmount - [float] $total
+                    $profit = [float] $currentMarketPrice * [float] $coins - [float] $total
                     $profitPercentage = $profit
                 }
 
                 $obj = New-Object psobject -Property @{ 
                     Market=$market; 
-                    TotalAmount=$totalAmount; 
-                    ActiveAmount=$activeAmount; 
+                    Coins=$coins; 
                     Spent=$total; 
                     CurrentMarketPrice=$currentMarketPrice; 
                     Profit= [Math]::Round($profit, 2);
                     ProfitPercentage = $profitPercentage
                 }
-                $objList += $obj | Select-Object Market,TotalAmount,ActiveAmount,Spent,CurrentMarketPrice,Profit,ProfitPercentage
+                $objList += $obj | Select-Object Market,Coins,Spent,CurrentMarketPrice,Profit,ProfitPercentage
             }
         }
 

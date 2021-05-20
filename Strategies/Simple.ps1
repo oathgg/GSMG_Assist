@@ -42,7 +42,9 @@
 
         # When the market has been changing too fast
         if ($pctChange24h -gt 15 -or $pctChange24h -le -15) {
-            $bemPct = -1
+            if ($bagPct -gt 10) {
+                $bemPct = -1
+            }
             $minProfitPct = 2
             $TrailingBuy = $true
         }
@@ -57,6 +59,7 @@
         }
         if ($bagPct -gt 50) {
             $minProfitPct = 1
+            $bemPct = -1
         }
 
         if ($shouldAllocate) {
