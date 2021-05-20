@@ -42,7 +42,9 @@
 
         # When the market has been changing too fast
         if ($pctChange24h -gt 15 -or $pctChange24h -le -15) {
-            $bemPct = -1
+            if ($bagPct -gt 10) {
+                $bemPct = -1
+            }
             $TrailingBuy = $true
         }
 
