@@ -52,13 +52,13 @@
         # Start decreasing minprofit because we're getting bags!!
         if ($bagPct -gt 30) {
             $TrailingBuy = $true
-            $minProfitPct = 3
+            $minProfitPct = 4
         }
         if ($bagPct -gt 40) {
-            $minProfitPct = 2
+            $minProfitPct = 3
         }
         if ($bagPct -gt 50) {
-            $minProfitPct = 1
+            $minProfitPct = 2
             $bemPct = -1
         }
 
