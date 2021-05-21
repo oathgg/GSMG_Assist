@@ -57,10 +57,10 @@
             }
             if ($bagPct -gt 40) {
                 $minProfitPct = 3
+                $bemPct = -1
             }
             if ($bagPct -gt 50) {
                 $minProfitPct = 2
-                $bemPct = -1
             }
         }
 
