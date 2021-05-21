@@ -54,13 +54,13 @@
             if ($bagPct -gt 30) {
                 $TrailingBuy = $true
                 $minProfitPct = 4
-                if ($bagPct -gt 40) {
-                    $minProfitPct = 3
-                }
-                if ($bagPct -gt 50) {
-                    $minProfitPct = 2
-                    $bemPct = -1
-                }
+            }
+            if ($bagPct -gt 40) {
+                $minProfitPct = 3
+            }
+            if ($bagPct -gt 50) {
+                $minProfitPct = 2
+                $bemPct = -1
             }
         }
 
