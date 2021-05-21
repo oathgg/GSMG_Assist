@@ -45,7 +45,9 @@
             if ($bagPct -gt 10) {
                 $bemPct = -1
             }
-            $minProfitPct = 2
+            if ($pctChange24h -le -15) {
+                $minProfitPct = 2
+            }
             $TrailingBuy = $true
         }
 
