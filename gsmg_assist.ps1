@@ -1,4 +1,6 @@
-﻿function Get-Latest($Path) {
+﻿param ($ParameterFileName = "parameters")
+
+function Get-Latest($Path) {
     Push-Location
     Set-Location $Path
     git pull
@@ -10,7 +12,7 @@ if (-not $curPath) {
     $curPath = $psise.CurrentFile.FullPath
 }
 
-if (-not (Test-Path "$curPath\parameters.ps1")) {
+if (-not (Test-Path "$curPath\$parameterFileName.ps1")) {
     throw "Parameter file needs to be created before running the tool, see readme.md"
 }
 
@@ -19,12 +21,14 @@ if (-not (Test-Path "$curPath\parameters.ps1")) {
 . "$curPath\Functions\Converters.ps1"
 . "$curPath\Functions\Tools.ps1"
 
+Set-GsmgPrivateKey -Key $Global:GSMGPrivateKeyHardcoded
+
 while ($true) {
     if ($Global:DoGetLatest) {
         Get-Latest -Path $curPath
     }
     
-    . "$curPath\parameters.ps1"
+    . "$curPath\$parameterFileName.ps1"
     . "$curPath\MarketHelper.ps1"
 
     $strategyPath = "$curPath\Strategies\$global:GSMGStrategy.ps1"
