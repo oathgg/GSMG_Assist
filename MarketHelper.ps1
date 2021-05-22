@@ -39,7 +39,7 @@ function Run-ConfigureGSMG($Settings) {
             $allocPct = 0
         }
 
-        if ($allocPct -gt $global:MaxAllocationPct[$baseCurrency]) {
+        if ($null -ne $global:MaxAllocationPct[$baseCurrency] -and $allocPct -gt $global:MaxAllocationPct[$baseCurrency]) {
             $allocPct = $global:MaxAllocationPct[$baseCurrency]
         }
 
