@@ -49,7 +49,7 @@
                 $minProfitPct = 1
             }
             if ($pctChange24h -gt 15) {
-                $minProfitPct = 10
+                $minProfitPct = 7
             }
             $TrailingBuy = $true
         } else {
