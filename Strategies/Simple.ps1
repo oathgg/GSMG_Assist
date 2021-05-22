@@ -48,6 +48,9 @@
             if ($pctChange24h -le -15) {
                 $minProfitPct = 1
             }
+            if ($pctChange24h -gt 15) {
+                $minProfitPct = 10
+            }
             $TrailingBuy = $true
         } else {
             # Start decreasing minprofit because we're getting bags!!
