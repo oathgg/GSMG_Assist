@@ -26,11 +26,11 @@
         }
 
         # Default settings
-        $bemPct = -2
+        $bemPct = 0
         $aggressivenessPct = 20
         $shouldAllocate = $true
         $TrailingBuy = $true
-        $minProfitPct = 3
+        $minProfitPct = 5
 
         # When the market has been changing too fast
         if ($pctChange24h -gt 15 -or $pctChange24h -le -15) {
@@ -39,25 +39,19 @@
             if ($pctChange24h -le -15) {
                 $minProfitPct = 1
             }
-            # Ride the wave a bit more than usual?
-            if ($pctChange24h -gt 15) {
-                $minProfitPct = 5
-            }
         } else {
             # We can still buy aggressively, but until a certain point.
             if ($bagPct -lt 10) {
                 $TrailingBuy = $false
             }
-            if ($bagPct -lt 30) {
-                $bemPct = 0
-            }
 
             # Start decreasing minprofit because we're getting bags!!
             if ($bagPct -gt 30) {
-                $minProfitPct = 2
+                $minProfitPct = 3
             }
             if ($bagPct -gt 40) {
-                $minProfitPct = 1
+                $minProfitPct = 2
+                $bemPct = -2
             }
         }
 
