@@ -35,14 +35,14 @@
         # When we're in an uptrend we only take small profits so we don't buy too high
         if ($pctChangeFromATH -gt -10) {
             $TrailingBuy = $true
-            $minProfitPct = 1
-            $bemPct = -1
+            $minProfitPct = 3
+            $bemPct = -2
         }
 
         # When the market has been changing too fast
         if ($pctChange24h -gt 15 -or $pctChange24h -le -15) {
             if ($bagPct -gt 10) {
-                $bemPct = -1
+                $bemPct = -2
             }
             if ($pctChange24h -le -15) {
                 $minProfitPct = 1
@@ -56,14 +56,14 @@
                 $TrailingBuy = $false
             }
             if ($bagPct -gt 30) {
-                $minProfitPct = 3
+                $minProfitPct = 4
             }
             if ($bagPct -gt 40) {
-                $minProfitPct = 2
-                $bemPct = -1
+                $minProfitPct = 3
+                $bemPct = -2
             }
             if ($bagPct -gt 50) {
-                $minProfitPct = 1
+                $minProfitPct = 2
             }
         }
 
