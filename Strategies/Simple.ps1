@@ -26,44 +26,38 @@
         }
 
         # Default settings
-        $bemPct = 0
+        $bemPct = -2
         $aggressivenessPct = 20
         $shouldAllocate = $true
         $TrailingBuy = $true
-        $minProfitPct = 4
-
-        # When we're in an uptrend we only take small profits so we don't buy too high
-        if ($pctChangeFromATH -gt -10) {
-            $TrailingBuy = $true
-            $minProfitPct = 3
-            $bemPct = -2
-        }
+        $minProfitPct = 3
 
         # When the market has been changing too fast
         if ($pctChange24h -gt 15 -or $pctChange24h -le -15) {
-            if ($bagPct -gt 10) {
-                $bemPct = -2
-            }
+            # If the market drops rather quickly then we want to sell asap whenever we buy.
+            # Of course, we might want to manage trailing sell during this time as well.?
             if ($pctChange24h -le -15) {
                 $minProfitPct = 1
             }
+            # Ride the wave a bit more than usual?
             if ($pctChange24h -gt 15) {
-                $minProfitPct = 7
+                $minProfitPct = 5
             }
         } else {
-            # Start decreasing minprofit because we're getting bags!!
+            # We can still buy aggressively, but until a certain point.
             if ($bagPct -lt 10) {
                 $TrailingBuy = $false
             }
+            if ($bagPct -lt 30) {
+                $bemPct = 0
+            }
+
+            # Start decreasing minprofit because we're getting bags!!
             if ($bagPct -gt 30) {
-                $minProfitPct = 4
+                $minProfitPct = 2
             }
             if ($bagPct -gt 40) {
-                $minProfitPct = 3
-                $bemPct = -2
-            }
-            if ($bagPct -gt 50) {
-                $minProfitPct = 2
+                $minProfitPct = 1
             }
         }
 
