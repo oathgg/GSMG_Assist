@@ -26,12 +26,11 @@
         }
 
         # Default settings
-        $minProfitPct = 5
         $bemPct = 0
         $aggressivenessPct = 40
         $shouldAllocate = $true
-        $TrailingBuy = $false
-        $minProfitPct = 5
+        $TrailingBuy = $true
+        $minProfitPct = 4
 
         # When we're in an uptrend we only take small profits so we don't buy too high
         if ($pctChangeFromATH -gt -10) {
@@ -51,19 +50,20 @@
             if ($pctChange24h -gt 15) {
                 $minProfitPct = 7
             }
-            $TrailingBuy = $true
         } else {
             # Start decreasing minprofit because we're getting bags!!
+            if ($bagPct -lt 10) {
+                $TrailingBuy = $false
+            }
             if ($bagPct -gt 30) {
-                $TrailingBuy = $true
-                $minProfitPct = 4
+                $minProfitPct = 3
             }
             if ($bagPct -gt 40) {
-                $minProfitPct = 3
+                $minProfitPct = 2
                 $bemPct = -1
             }
             if ($bagPct -gt 50) {
-                $minProfitPct = 2
+                $minProfitPct = 1
             }
         }
 
