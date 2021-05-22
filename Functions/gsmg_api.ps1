@@ -1,11 +1,6 @@
 ﻿$script:baseUri = "https://gsmg.io"
 $script:Token = $null
 $script:TokenExpiresAt = Get-Date
-$script:GsmgPrivateKey = $null
-
-function Set-GsmgPrivateKey($key) {
-    $script:GsmgPrivateKey = $key
-}
 
 function ConvertTo-GSMGMessage($Hashset) {
     $body = "{"
@@ -35,10 +30,7 @@ function Get-GSMGHeader() {
 function Invoke-GSMGRequest($Uri, $Method, $Body, [Switch] $RequiresToken) {
     if ($RequiresToken) {
         if ([string]::IsNullOrEmpty($script:Token)) {
-            $gsmgMfaCode = $script:GsmgPrivateKey
-            if ($null -eq $gsmgMfaCode) {
-                $gsmgMfaCode = Read-Host "Please enter the GSMG MFA code"
-            }
+            $gsmgMfaCode = Read-Host "Please enter the GSMG MFA code for account '$global:GSMGEmail'"
             New-GSMGAuthentication -Email $global:GSMGEmail -Password $global:GSMGPassword -Code $gsmgMfaCode
         } else {
             New-GSMGToken

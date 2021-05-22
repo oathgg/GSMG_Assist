@@ -1,4 +1,4 @@
-﻿param ($ParameterFileName = "parameters")
+﻿param ($ParameterFileName = "parameters_ike")
 
 function Get-Latest($Path) {
     Push-Location
@@ -16,12 +16,11 @@ if (-not (Test-Path "$curPath\$parameterFileName.ps1")) {
     throw "Parameter file needs to be created before running the tool, see readme.md"
 }
 
+. "$curPath\$parameterFileName.ps1"
 . "$curPath\Functions\binance_api.ps1"
 . "$curPath\Functions\gsmg_api.ps1"
 . "$curPath\Functions\Converters.ps1"
 . "$curPath\Functions\Tools.ps1"
-
-Set-GsmgPrivateKey -Key $Global:GSMGPrivateKeyHardcoded
 
 while ($true) {
     if ($Global:DoGetLatest) {
