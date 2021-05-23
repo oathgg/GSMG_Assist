@@ -38,6 +38,7 @@
             # Of course, we might want to manage trailing sell during this time as well.?
             if ($pctChange24h -le -15) {
                 $minProfitPct = 1
+                $bemPct = -1
             }
         } else {
             # We can still buy aggressively, but until a certain point.
