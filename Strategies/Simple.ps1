@@ -37,7 +37,7 @@
             # If the market drops rather quickly then we want to sell asap whenever we buy.
             # Of course, we might want to manage trailing sell during this time as well.?
             if ($pctChange24h -le -15) {
-                $minProfitPct = 1
+                $minProfitPct = 2
                 $bemPct = -1
             }
         } else {
