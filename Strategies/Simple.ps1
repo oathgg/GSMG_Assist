@@ -33,14 +33,15 @@
         $minProfitPct = 5
 
         # When the market has been changing too fast
-        if ($pctChange24h -gt 15 -or $pctChange24h -le -15) {
+        if ($pctChange24h -le -15 -or $pctChange24h -gt 15) {
             # If the market drops rather quickly then we want to sell asap whenever we buy.
-            # Of course, we might want to manage trailing sell during this time as well.?
+            # We might want to manage trailing sell during this time as well.?
             if ($pctChange24h -le -15) {
                 $minProfitPct = 2
-                $bemPct = -1
             }
-        } else {
+            $bemPct = -1
+        }
+        else {
             # We can still buy aggressively, but until a certain point.
             if ($bagPct -lt 10) {
                 $TrailingBuy = $false
