@@ -143,3 +143,16 @@ function Set-GMSGMarketStatus($Market, $Enabled) {
     Invoke-GSMGRequest -Uri $Uri -Method Patch -Body $body -RequiresToken | Out-Null
     #Write-Host "[$Market] -> Enabled: $Enabled"
 }
+
+function Get-GSMGSellOrders($Market) {
+    $uri = "$script:baseUri/api/v1/openorders/sellorders/Binance:$Market"
+    $res = Invoke-GSMGRequest -Uri $Uri -Method Get -RequiresToken
+    return $res
+}
+
+function Get-GMSGLowestSellOrder($Market) {
+    $sellOrders = Get-GSMGSellOrders($Market)
+    $lowestSellOrder = $sellOrders | Sort-Object Price | Select-Object -First 1
+
+    return $lowestSellOrder
+}

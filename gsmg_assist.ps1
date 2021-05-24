@@ -1,4 +1,4 @@
-﻿param ($ParameterFileName = "parameters_ike")
+﻿param ($ParameterFileName = "parameters")
 
 function Get-Latest($Path) {
     Push-Location
@@ -19,8 +19,6 @@ if (-not (Test-Path "$curPath\$parameterFileName.ps1")) {
 . "$curPath\$parameterFileName.ps1"
 . "$curPath\Functions\binance_api.ps1"
 . "$curPath\Functions\gsmg_api.ps1"
-. "$curPath\Functions\Converters.ps1"
-. "$curPath\Functions\Tools.ps1"
 
 while ($true) {
     if ($Global:DoGetLatest) {
