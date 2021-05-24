@@ -2,7 +2,7 @@
     $Settings = @();
     $marketsToScan = $Global:GSMGmarkets | ? { $_.Enabled }
     foreach ($marketName in $marketsToScan.market_name) {
-        [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1d" -CandleLimit 30 -IncludeCurrentCandle
+        [float] $pctChangeFromATH = Get-AthChangePct -Market $marketName -Interval "1d" -CandleLimit 365 -IncludeCurrentCandle
         [float] $pctChange24h = (Get-24hTicker($marketName)).priceChangePercent
 
         $market = $Global:GSMGmarkets | Where-Object { $_.market_name -eq $marketName }
@@ -36,6 +36,9 @@
         if ($pctChange24h -le -15 -or $pctChange24h -gt 15) {
             # If the market drops rather quickly then we want to sell asap whenever we buy.
             # We might want to manage trailing sell during this time as well.?
+            if ($pctChangeFromATH -gt 10) {
+                $minProfitPct = 2
+            }
             if ($pctChange24h -le -15) {
                 $minProfitPct = 2
             }
