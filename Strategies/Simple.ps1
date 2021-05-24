@@ -48,14 +48,7 @@
             # Buy aggressively until we hit 10% bags
             if ($bagPct -lt 10) {
                 $TrailingBuy = $false
-            }
-
-            # Decrease profit so we sell our orders a bit faster...
-            if ($bagPct -gt 30) {
-                $minProfitPct = 3
-            }
-
-            if ($bagPct -gt 10) {
+            } else {
                 $lowestSellOrder = Get-GMSGLowestSellOrder -Market $marketName
                 $curPrice = Get-Ticker -Market $marketName -Interval "1m" -CandleLimit "1"
                 $priceDiffPct = $lowestSellOrder.price / $curPrice.Close * 100 - 100
@@ -64,6 +57,11 @@
                     # Lower BEM so we don't buy too much at the same spot...
                     $bemPct = -1
                 }
+            }
+
+            # Decrease profit so we sell our orders a bit faster...
+            if ($bagPct -gt 30) {
+                $minProfitPct = 3
             }
         }
 
