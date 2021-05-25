@@ -34,14 +34,14 @@
 
         # When the market has been changing too fast
         if ($pctChange24h -le -15 -or $pctChange24h -gt 15) {
+            # If we are close to our ATH then we want to sell quickly as well
             # If the market drops rather quickly then we want to sell asap whenever we buy.
             # We might want to manage trailing sell during this time as well.?
-            if ($pctChangeFromATH -gt 10) {
-                $minProfitPct = 2
+            if ($pctChangeFromATH -gt -10 -or $pctChange24h -le -15) {
+                $minProfitPct = 3
             }
-            if ($pctChange24h -le -15) {
-                $minProfitPct = 2
-            }
+
+            # Keep a bit more distance from the market so we don't fomo buy.
             $bemPct = -1
         }
         else {
