@@ -53,7 +53,7 @@
                 $curPrice = Get-Ticker -Market $marketName -Interval "1m" -CandleLimit "1"
                 $priceDiffPct = $lowestSellOrder.price / $curPrice.Close * 100 - 100
                 # If we're close to our lowest sell order then we want to adjust our bemPct
-                if ($priceDiffPct -lt 10) {
+                if ($priceDiffPct -lt 5) {
                     # Lower BEM so we don't buy too much at the same spot...
                     $bemPct = -1
                 }
