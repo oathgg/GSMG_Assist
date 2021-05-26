@@ -5,8 +5,8 @@ Parameter file should look like
 
 ```powershell
 # GSMG API
-$global:GSMGEmail = "sander@gmail.com"
-$global:GSMGPassword = 'VerySecurePassword123'
+$global:GSMGEmail = "xxxxxxxxxxx@xxxxx.com"
+$global:GSMGPassword = 'xxxxxxxxxxx'
 $global:GSMGStrategy = "Simple" # Name of the strategy file which is located in '\strategies'
 
 # Market settings
@@ -22,8 +22,8 @@ $global:MarketsToIgnore = @()
 A sample would look like
 ```powershell
 # GSMG API
-$global:GSMGEmail = "xxxxxxxxxxx@xxxxx.com"
-$global:GSMGPassword = 'xxxxxxxxxxx'
+$global:GSMGEmail = "sander@gmail.com"
+$global:GSMGPassword = 'VerySecurePassword123'
 $global:GSMGStrategy = "Simple" # Name of the strategy file which is located in '\strategies'
 
 # Market settings
