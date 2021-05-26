@@ -57,9 +57,12 @@
                     # Lower BEM so we don't buy too much at the same spot...
                     $bemPct = -1
                 }
-                elseif ($priceDiffPct -gt 15)
-                {
-                    $bemPct = 1
+                elseif ($priceDiffPct -gt 15) {
+                    # Perhaps change this to TB off as we have enough distance already and we can buy some more instead of changing bem?
+                    #$bemPct = 1
+
+                    # Bit more aggressive, but not as aggressive as bem = 1
+                    $TrailingBuy = $False
                 }
             }
 
