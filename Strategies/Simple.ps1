@@ -57,6 +57,10 @@
                     # Lower BEM so we don't buy too much at the same spot...
                     $bemPct = -1
                 }
+                elseif ($priceDiffPct -gt 15)
+                {
+                    $bemPct = 1
+                }
             }
 
             # Decrease profit so we sell our orders a bit faster...
