@@ -144,27 +144,21 @@ function Set-GMSGMarketStatus($Market, $Enabled) {
     #Write-Host "[$Market] -> Enabled: $Enabled"
 }
 
-function Get-GSMGSellOrders($Market) {
-    $uri = "$script:baseUri/api/v1/openorders/sellorders/Binance:$Market"
+function Get-GSMGOpenOrders($Type, $Market) {
+    $uri = "$script:baseUri/api/v1/openorders/$Type/Binance:$Market"
     $res = Invoke-GSMGRequest -Uri $Uri -Method Get -RequiresToken
     return $res
 }
 
 function Get-GMSGLowestSellOrder($Market) {
-    $sellOrders = Get-GSMGSellOrders($Market)
+    $sellOrders = Get-GSMGOpenOrders -Type "sellorders" -Market $Market
     $lowestSellOrder = $sellOrders | Sort-Object Price | Select-Object -First 1
 
     return $lowestSellOrder
 }
 
-function Get-GSMGBuyOrders($Market) {
-    $uri = "$script:baseUri/api/v1/openorders/buyorders/Binance:$Market"
-    $res = Invoke-GSMGRequest -Uri $Uri -Method Get -RequiresToken
-    return $res
-}
-
 function Get-GMSGHighestBuyOrder($Market) {
-    $buyOrders = Get-GSMGBuyOrders($Market)
+    $buyOrders = Get-GSMGOpenOrders -Type "buyorders" -Market $Market
     $highestBuyOrder = $buyOrders | Sort-Object Price -Descending | Select-Object -First 1
 
     return $highestBuyOrder

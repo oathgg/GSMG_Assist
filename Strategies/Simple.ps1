@@ -27,7 +27,7 @@
 
         # Default settings
         $bemPct = 0
-        $aggressivenessPct = 50
+        $aggressivenessPct = 20
         $shouldAllocate = $true
         $TrailingBuy = $true
         $minProfitPct = 5
