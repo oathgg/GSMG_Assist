@@ -56,10 +56,10 @@
                 $highestBuyOrder = Get-GMSGHighestBuyOrder -Market $marketName #Trailing buy will give us a wrong visual...
                 $priceDiffPct = $lowestSellOrder.price / $highestBuyOrder.price * 100 - 100
 
-                if ($priceDiffPct -lt 12) {
+                if ($priceDiffPct -lt 15) {
                     $bemPct = -1
                 }
-                if ($priceDiffPct -ge 12) {
+                if ($priceDiffPct -ge 15) {
                     $TrailingBuy = $False
                 }
             }
