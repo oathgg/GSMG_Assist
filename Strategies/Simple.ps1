@@ -38,17 +38,15 @@
             # If the market drops rather quickly then we want to sell asap whenever we buy.
             # We might want to manage trailing sell during this time as well.?
             if ($pctChangeFromATH -gt -10 -or $pctChange24h -le -15) {
-                $minProfitPct = 3
+                $minProfitPct = 1
             }
 
             # Keep a bit more distance from the market so we don't fomo buy.
             $bemPct = -1
         }
         else {
-            # Buy aggressively until we hit 10% bags
-            if ($bagPct -lt 10) {
-                $TrailingBuy = $false
-            } else {
+            # Buy normally until we hit 10% bags
+            if ($bagPct -gt 10) {
                 $lowestSellOrder = Get-GMSGLowestSellOrder -Market $marketName #Trailing sell will give us a wrong visual...
                 $highestBuyOrder = Get-GMSGHighestBuyOrder -Market $marketName #Trailing buy will give us a wrong visual...
                 $priceDiffPct = $lowestSellOrder.price / $highestBuyOrder.price * 100 - 100
