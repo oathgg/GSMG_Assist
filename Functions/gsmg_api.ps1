@@ -86,7 +86,7 @@ function Get-GSMGSubscription() {
 }
 
 #PATCH /api/v1/markets/Binance:CAKEBUSD HTTP/1.1
-function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPct, $TrailingBuy) {
+function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPct, $TrailingBuy, $TrailingSell) {
     $uri = "$script:baseUri/api/v1/markets/Binance:$Market"
 
     $hashSet = @{}
@@ -103,6 +103,9 @@ function Set-GSMGSetting($Market, $AggressivenessPct, $MinTradeProfitPct, $BemPc
         } else {
             $hashSet += @{"do_trsl_buy"=0}
         }
+    }
+    if ($null -ne $TrailingSell) {
+        $hashSet += @{"do_trailing_stop_loss"=$TrailingSell}
     }
     if ($null -ne $MinTradeProfitPct) {
         $hashSet += @{"track_mtp_pct"=$False}

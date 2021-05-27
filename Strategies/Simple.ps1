@@ -31,6 +31,7 @@
         $shouldAllocate = $true
         $TrailingBuy = $true
         $minProfitPct = 5
+        $trailingSell = $false
 
         # When the market has been changing too fast
         if ($pctChange24h -le -15 -or $pctChange24h -gt 15) {
@@ -39,6 +40,10 @@
             # We might want to manage trailing sell during this time as well.?
             if ($pctChangeFromATH -gt -10 -or $pctChange24h -le -15) {
                 $minProfitPct = 1
+            }
+            # When there is a hard crash 
+            if ($pctChange24h -le -15) {
+                $trailingSell = $true
             }
 
             # Keep a bit more distance from the market so we don't fomo buy.
@@ -66,10 +71,10 @@
         }
 
         if ($shouldAllocate) {
-            Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct, MPROFIT: $minProfitPct, TB: $TrailingBuy"
+            Write-Host "[$marketName] -> BEM: $bemPct, AGGR: $aggressivenessPct, MPROFIT: $minProfitPct, TB: $TrailingBuy, TS: $trailingSell"
         }
 
-        $Settings += New-ConfigurationObject -BemPct $bemPct -AggressivenessPct $aggressivenessPct -ShouldAllocate $shouldAllocate -BaseCurrency $market.base_currency -MarketName $marketName -MinProfitPct $minProfitPct -TrailingBuy $TrailingBuy
+        $Settings += New-ConfigurationObject -BemPct $bemPct -AggressivenessPct $aggressivenessPct -ShouldAllocate $shouldAllocate -BaseCurrency $market.base_currency -MarketName $marketName -MinProfitPct $minProfitPct -TrailingBuy $TrailingBuy -TrailingSell $trailingSell
     }
 
     return $Settings

@@ -1,4 +1,4 @@
-﻿function New-ConfigurationObject($BemPct, $AggressivenessPct, $ShouldAllocate, $BaseCurrency, $MarketName, $MinProfitPct, $TrailingBuy) {
+﻿function New-ConfigurationObject($BemPct, $AggressivenessPct, $ShouldAllocate, $BaseCurrency, $MarketName, $MinProfitPct, $TrailingBuy, $TrailingSell) {
     $Settings = New-Object PSObject -Property @{ 
         MarketName=$MarketName
         BemPCT=$BemPct
@@ -7,6 +7,7 @@
         BaseCurrency=$BaseCurrency 
         MinProfitPct=$MinProfitPct
         TrailingBuy=$TrailingBuy
+        TrailingSell=$TrailingSell
     }
     return $Settings
 }
@@ -25,6 +26,7 @@ function Run-ConfigureGSMG($Settings) {
         $minProfitPct = $setting.MinProfitPct
         $baseCurrency = $setting.BaseCurrency
         $trailingBuy = $setting.TrailingBuy
+        $TrailingSell = $setting.TrailingSell
    
         if ($shouldAlloc) {
             $marketCountToAllocate = @($Settings | Where-Object { $_.basecurrency -eq $baseCurrency -and $_.ShouldAllocate }).Count
@@ -44,6 +46,6 @@ function Run-ConfigureGSMG($Settings) {
         }
 
         Set-GMSGMarketAllocation -Market $marketName -AllocationPct $allocPct
-        Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $minProfitPct -TrailingBuy $trailingBuy
+        Set-GSMGSetting -Market $marketName -BemPct $newBem -AggressivenessPct $newAgg -MinTradeProfitPct $minProfitPct -TrailingBuy $trailingBuy -TrailingSell $TrailingSell
     }
 }
