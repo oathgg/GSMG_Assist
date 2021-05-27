@@ -49,19 +49,14 @@
             if ($bagPct -lt 10) {
                 $TrailingBuy = $false
             } else {
-                $lowestSellOrder = Get-GMSGLowestSellOrder -Market $marketName
-                $curPrice = Get-Ticker -Market $marketName -Interval "1m" -CandleLimit "1"
-                $priceDiffPct = $lowestSellOrder.price / $curPrice.Close * 100 - 100
-                # If we're close to our lowest sell order then we want to adjust our bemPct
-                if ($priceDiffPct -lt 5) {
-                    # Lower BEM so we don't buy too much at the same spot...
+                $lowestSellOrder = Get-GMSGLowestSellOrder -Market $marketName #Trailing sell will give us a wrong visual...
+                $highestBuyOrder = Get-GMSGHighestBuyOrder -Market $marketName #Trailing buy will give us a wrong visual...
+                $priceDiffPct = $lowestSellOrder.price / $highestBuyOrder.price * 100 - 100
+
+                if ($priceDiffPct -lt 10) {
                     $bemPct = -1
                 }
-                elseif ($priceDiffPct -gt 15) {
-                    # Perhaps change this to TB off as we have enough distance already and we can buy some more instead of changing bem?
-                    #$bemPct = 1
-
-                    # Bit more aggressive, but not as aggressive as bem = 1
+                if ($priceDiffPct -ge 10) {
                     $TrailingBuy = $False
                 }
             }

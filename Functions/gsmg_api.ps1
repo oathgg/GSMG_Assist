@@ -156,3 +156,16 @@ function Get-GMSGLowestSellOrder($Market) {
 
     return $lowestSellOrder
 }
+
+function Get-GSMGBuyOrders($Market) {
+    $uri = "$script:baseUri/api/v1/openorders/buyorders/Binance:$Market"
+    $res = Invoke-GSMGRequest -Uri $Uri -Method Get -RequiresToken
+    return $res
+}
+
+function Get-GMSGHighestBuyOrder($Market) {
+    $buyOrders = Get-GSMGBuyOrders($Market)
+    $highestBuyOrder = $buyOrders | Sort-Object Price -Descending | Select-Object -First 1
+
+    return $highestBuyOrder
+}
