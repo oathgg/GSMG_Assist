@@ -50,13 +50,16 @@
             $bemPct = -1
         }
         else {
-            # Decrease profit so we sell our orders a bit faster...
-            if ($bagPct -gt 30) {
-                $minProfitPct = 3
+            if ($bagPct -lt 10) {
+                $trailingbuy = $False
             }
-
             # Buy normally until we hit 10% bags
-            if ($bagPct -gt 10) {
+            else {
+                # Decrease profit so we sell our orders a bit faster...
+                if ($bagPct -gt 30) {
+                    $minProfitPct = 3
+                }
+
                 $lowestSellOrder = Get-GMSGLowestSellOrder -Market $marketName #Trailing sell will give us a wrong visual...
                 $curPrice = Get-Ticker -Market $marketName -Interval "1m" -CandleLimit "1"
                 $priceDiffPct = $lowestSellOrder.price / $curPrice.Close * 100 - 100
