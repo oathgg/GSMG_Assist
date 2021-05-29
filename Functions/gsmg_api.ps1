@@ -153,14 +153,14 @@ function Get-GSMGOpenOrders($Type, $Market) {
     return $res
 }
 
-function Get-GMSGLowestSellOrder($Market) {
+function Get-GSMGLowestSellOrder($Market) {
     $sellOrders = Get-GSMGOpenOrders -Type "sellorders" -Market $Market
     $lowestSellOrder = $sellOrders | Sort-Object Price | Select-Object -First 1
 
     return $lowestSellOrder
 }
 
-function Get-GMSGHighestBuyOrder($Market) {
+function Get-GSMGHighestBuyOrder($Market) {
     $buyOrders = Get-GSMGOpenOrders -Type "buyorders" -Market $Market
     $highestBuyOrder = $buyOrders | Sort-Object Price -Descending | Select-Object -First 1
 

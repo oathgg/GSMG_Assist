@@ -41,10 +41,9 @@
             if ($pctChangeFromATH -gt -10 -or $pctChange24h -le -15) {
                 $minProfitPct = 1
             }
-            # When there is a hard crash 
-            if ($pctChange24h -le -15) {
-                $trailingSell = $true
-            }
+            
+            # Try to get even more profit, LETSGO!
+            $trailingSell = $true
 
             # Keep a bit more distance from the market so we don't fomo buy.
             $bemPct = -1
@@ -55,16 +54,20 @@
                 $minProfitPct = 3
             }
 
-            $lowestSellOrder = Get-GMSGLowestSellOrder -Market $marketName #Trailing sell will give us a wrong visual...
-            if ($lowestSellOrder) {
+            $sellOrders = Get-GSMGOpenOrders -Type "sellorders" -Market $marketName
+            if ($sellOrders) {
+                # Get the avg of the last 3 sell orders, if we meet our threshold then we can buy aggressively
+                $avg = ($sellOrders | Sort-Object Price | Select-Object -First 3 | Measure-Object price -Average).Average
                 $curPrice = Get-Ticker -Market $marketName -Interval "1m" -CandleLimit "1"
-                $priceDiffPct = $lowestSellOrder.price / $curPrice.Close * 100 - 100
+                $priceDiffPct = $avg / $curPrice.Close * 100 - 100
     
                 if ($priceDiffPct -ge 10) {
                     $TrailingBuy = $False
                 }
             }
             else {
+                # If we don't have any sell orders then lets just turn off TB
+                # In my experience if I have TB on with default settings its sometimes a bit slow with getting a first buy order in.
                 $TrailingBuy = $False
             }
         }
