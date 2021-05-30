@@ -61,8 +61,12 @@
                 $curPrice = Get-Ticker -Market $marketName -Interval "1m" -CandleLimit "1"
                 $priceDiffPct = $avg / $curPrice.Close * 100 - 100
     
-                if ($priceDiffPct -ge 10) {
+                if ($priceDiffPct -ge 5) {
                     $TrailingBuy = $False
+                }
+
+                if ($priceDiffPct -ge 10) {
+                    $bemPct = 1
                 }
             }
             else {
