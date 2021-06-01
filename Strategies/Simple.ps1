@@ -55,7 +55,7 @@
             }
 
             $sellOrders = Get-GSMGOpenOrders -Type "sellorders" -Market $marketName
-            if ($sellOrders) {
+            if ($sellOrders -and $sellOrders.Count -ge 3) {
                 # Get the avg of the last 3 sell orders, if we meet our threshold then we can buy aggressively
                 $avg = ($sellOrders | Sort-Object Price | Select-Object -First 3 | Measure-Object price -Average).Average
                 $curPrice = Get-Ticker -Market $marketName -Interval "1m" -CandleLimit "1"
