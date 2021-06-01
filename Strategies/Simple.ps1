@@ -29,7 +29,7 @@
         $bemPct = 0
         $aggressivenessPct = 20
         $shouldAllocate = $true
-        $TrailingBuy = $true
+        $TrailingBuy = $false
         $minProfitPct = 5
         $trailingSell = $false
 
@@ -44,9 +44,10 @@
             
             # Try to get even more profit, LETSGO!
             $trailingSell = $true
+            $TrailingBuy = $true
 
             # Keep a bit more distance from the market so we don't fomo buy.
-            $bemPct = -1
+            $bemPct = -2
         }
         else {
             # Decrease profit so we sell our orders a bit faster...
@@ -60,10 +61,6 @@
                 $avg = ($sellOrders | Sort-Object Price | Select-Object -First 3 | Measure-Object price -Average).Average
                 $curPrice = Get-Ticker -Market $marketName -Interval "1m" -CandleLimit "1"
                 $priceDiffPct = $avg / $curPrice.Close * 100 - 100
-    
-                if ($priceDiffPct -ge 5) {
-                    $TrailingBuy = $False
-                }
 
                 if ($priceDiffPct -ge 10) {
                     $bemPct = 1
@@ -72,7 +69,6 @@
             else {
                 # If we don't have any sell orders then lets just turn off TB
                 # In my experience if I have TB on with default settings its sometimes a bit slow with getting a first buy order in.
-                $TrailingBuy = $False
                 $bemPct = 1
             }
         }
