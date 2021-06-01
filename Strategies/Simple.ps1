@@ -30,7 +30,7 @@
         $aggressivenessPct = 20
         $shouldAllocate = $true
         $TrailingBuy = $false
-        $minProfitPct = 5
+        $minProfitPct = 3
         $trailingSell = $false
 
         # When the market has been changing too fast
@@ -50,11 +50,6 @@
             $bemPct = -2
         }
         else {
-            # Decrease profit so we sell our orders a bit faster...
-            if ($bagPct -gt 30) {
-                $minProfitPct = 3
-            }
-
             $sellOrders = Get-GSMGOpenOrders -Type "sellorders" -Market $marketName
             if ($sellOrders -and $sellOrders.Count -ge 3) {
                 # Get the avg of the last 3 sell orders, if we meet our threshold then we can buy aggressively
