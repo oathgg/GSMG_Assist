@@ -72,6 +72,7 @@
             else {
                 # If we don't have any sell orders then lets just turn off TB
                 # In my experience if I have TB on with default settings its sometimes a bit slow with getting a first buy order in.
+                $TrailingBuy = $False
                 $bemPct = 1
             }
         }
