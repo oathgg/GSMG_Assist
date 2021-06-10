@@ -62,7 +62,6 @@
                 $priceDiffPct = $avg / $curPrice.Close * 100 - 100
 
                 if ($priceDiffPct -le $minProfitPct) {
-                    $bemPct = -1
                     $trailingBuy = $true
                 }
                 if ($priceDiffPct -ge 10) {
