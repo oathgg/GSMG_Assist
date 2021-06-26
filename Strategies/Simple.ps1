@@ -30,7 +30,7 @@
         $aggressivenessPct = 20
         $shouldAllocate = $true
         $TrailingBuy = $false
-        $minProfitPct = 5
+        $minProfitPct = 3
         $trailingSell = $false
 
         # When the market has been changing too fast
@@ -50,11 +50,7 @@
             $bemPct = -2
         }
         else {
-            if ($bagPct -ge 25) {
-                $minProfitPct = 3
-            }
-
-            if ($bagPct -ge 50) {
+            if ($bagPct -ge 40) {
                 $minProfitPct = 1
                 $trailingSell = $true
             }
