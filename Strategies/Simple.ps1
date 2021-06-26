@@ -50,11 +50,11 @@
             $bemPct = -2
         }
         else {
-            if ($bagPct -ge 30) {
+            if ($bagPct -ge 25) {
                 $minProfitPct = 3
             }
 
-            if ($bagPct -ge 60) {
+            if ($bagPct -ge 50) {
                 $minProfitPct = 1
                 $trailingSell = $true
             }
