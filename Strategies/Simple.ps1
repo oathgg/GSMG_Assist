@@ -54,6 +54,11 @@
                 $minProfitPct = 3
             }
 
+            if ($bagPct -ge 60) {
+                $minProfitPct = 1
+                $trailingSell = $true
+            }
+
             $sellOrders = Get-GSMGOpenOrders -Type "sellorders" -Market $marketName
             if ($sellOrders -and $sellOrders.Count -ge 3) {
                 # Get the avg of the last 3 sell orders, if we meet our threshold then we can buy aggressively
@@ -61,8 +66,7 @@
                 $curPrice = Get-Ticker -Market $marketName -Interval "1m" -CandleLimit "1"
                 $priceDiffPct = $avg / $curPrice.Close * 100 - 100
 
-                if ($priceDiffPct -le $minProfitPct) {
-                    $trailingBuy = $true
+                if ($priceDiffPct -le 5) {
                     $bemPct = -1
                 }
                 if ($priceDiffPct -ge 10) {
