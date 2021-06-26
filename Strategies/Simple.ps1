@@ -63,6 +63,7 @@
 
                 if ($priceDiffPct -le $minProfitPct) {
                     $trailingBuy = $true
+                    $bemPct = -1
                 }
                 if ($priceDiffPct -ge 10) {
                     $bemPct = 1
