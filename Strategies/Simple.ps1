@@ -26,7 +26,7 @@
         }
 
         # Default settings
-        $bemPct = 0
+        $bemPct = -1
         $aggressivenessPct = 20
         $shouldAllocate = $true
         $TrailingBuy = $false
@@ -37,7 +37,6 @@
         if ($pctChange24h -le -15 -or $pctChange24h -gt 15) {
             # If we are close to our ATH then we want to sell quickly as well
             # If the market drops rather quickly then we want to sell asap whenever we buy.
-            # We might want to manage trailing sell during this time as well.?
             if ($pctChangeFromATH -gt -10 -or $pctChange24h -le -15) {
                 $minProfitPct = 1
             }
@@ -46,8 +45,10 @@
             $trailingSell = $true
             $TrailingBuy = $true
 
-            # Keep a bit more distance from the market so we don't fomo buy.
-            $bemPct = -2
+            # When the 24h change pct lower than -30 then we want to buy a bit more aggressively, hoping that the market will go up
+            if ($pctChange24h -le -30) {
+                $bemPct = 0
+            }
         }
         else {
             if ($bagPct -ge 40) {
@@ -62,17 +63,9 @@
                 $curPrice = Get-Ticker -Market $marketName -Interval "1m" -CandleLimit "1"
                 $priceDiffPct = $avg / $curPrice.Close * 100 - 100
 
-                if ($priceDiffPct -le 5) {
-                    $bemPct = -1
-                }
                 if ($priceDiffPct -ge 10) {
-                    $bemPct = 1
+                    $bemPct = 0
                 }
-            }
-            else {
-                # If we don't have any sell orders then lets just turn off TB
-                # In my experience if I have TB on with default settings its sometimes a bit slow with getting a first buy order in.
-                $bemPct = 1
             }
         }
 
